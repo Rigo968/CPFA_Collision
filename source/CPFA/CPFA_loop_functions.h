@@ -65,6 +65,7 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		double getRateOfSiteFidelity();
 		double getRateOfLayingPheromone();
 		double getRateOfPheromoneDecay();
+		double getRateOfGiveupInformed();
 
 	protected:
 
@@ -103,6 +104,7 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		argos::Real RateOfSiteFidelity;
 		argos::Real RateOfLayingPheromone;
 		argos::Real RateOfPheromoneDecay;
+		argos::Real RateOfGiveupInformed;
 
 		/* physical robot & world variables */
 		argos::Real FoodRadius;
@@ -111,6 +113,7 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		argos::Real NestRadiusSquared;
 		argos::Real NestElevation;
 		argos::Real SearchRadiusSquared;
+		argos::Real CameraRadiusSquared;
 
 		/* list variables for food & pheromones */
 		std::vector<argos::CVector2> FoodList;
@@ -121,7 +124,9 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		std::vector<argos::CRay3>    TargetRayList;
 		argos::CRange<argos::Real>   ForageRangeX;
 		argos::CRange<argos::Real>   ForageRangeY;
-  
+		map<string, argos::CVector2> robotPosList; //qilu 06/2023
+		//vector<argos::CVector2> robotPosList; //qilu 06/2023
+		
                 Real   CollisionTime;
                 size_t currCollisionTime; 
                 size_t lastCollisionTime; 

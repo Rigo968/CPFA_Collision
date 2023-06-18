@@ -13,7 +13,26 @@ CPFA_qt_user_functions::CPFA_qt_user_functions() :
 
 void CPFA_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
 	CPFA_controller& c = dynamic_cast<CPFA_controller&>(entity.GetControllableEntity().GetController());
+	std::vector<argos::CVector2> points;
+	points.push_back(CVector2(0,0));
+	points.push_back(CVector2(0.71,0.71));
+	
+	points.push_back(CVector2(0.83,0.55));
+	
+	points.push_back(CVector2(0.92, 0.38));
+	points.push_back(CVector2(0.98,0.2));
+	points.push_back(CVector2(1,0));
+	
+	points.push_back(CVector2(0.98,-0.2));
+	
+	points.push_back(CVector2(0.92, -0.38));
+	
+	points.push_back(CVector2(0.83, -0.55));
+	points.push_back(CVector2(0.71, -0.71));
 
+
+	DrawPolygon(CVector3(0, 0, 0.002), CQuaternion(), points, argos::CColor::ORANGE);
+	
 	if(c.IsHoldingFood()) {
 		DrawCylinder(CVector3(0.0, 0.0, 0.3), CQuaternion(), loopFunctions.FoodRadius, 0.025, CColor::BLACK);
 	}
@@ -75,6 +94,7 @@ void CPFA_qt_user_functions::DrawNest() {
     DrawCylinder(nest_3d, CQuaternion(), loopFunctions.NestRadius, 0.008, CColor::GREEN);
 }
 
+
 void CPFA_qt_user_functions::DrawFood() {
 
 	Real x, y;
@@ -86,12 +106,12 @@ void CPFA_qt_user_functions::DrawFood() {
 	}
  
 	 //draw food in nests
-	 for (size_t i=0; i< loopFunctions.CollectedFoodList.size(); i++)
+	 /*for (size_t i=0; i< loopFunctions.CollectedFoodList.size(); i++)
 	 { 
 	        x = loopFunctions.CollectedFoodList[i].GetX();
 	        y = loopFunctions.CollectedFoodList[i].GetY();
 	        DrawCylinder(CVector3(x, y, 0.002), CQuaternion(), loopFunctions.FoodRadius, 0.025, CColor::BLACK);
-	  } 
+	  } */ 
 }
 
 void CPFA_qt_user_functions::DrawFidelity() {

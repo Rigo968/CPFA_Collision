@@ -1,11 +1,11 @@
 source/CPFA/CMakeFiles/CPFA_loop_functions.dir/CPFA_qt_user_functions.cpp.o: \
- /home/qlu/Documents/random_drop_CPFA/source/CPFA/CPFA_qt_user_functions.cpp \
+ /home/qilu/Documents/Collision_Free_CPFA/source/CPFA/CPFA_qt_user_functions.cpp \
  /usr/include/stdc-predef.h \
- /home/qlu/Documents/random_drop_CPFA/source/CPFA/CPFA_qt_user_functions.h \
- /usr/local/include/argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h \
- /usr/local/include/argos3/core/utility/configuration/base_configurable_resource.h \
- /usr/local/include/argos3/core/utility/configuration/argos_configuration.h \
- /usr/local/include/argos3/core/utility/datatypes/datatypes.h \
+ /home/qilu/Documents/Collision_Free_CPFA/source/CPFA/CPFA_qt_user_functions.h \
+ /usr/include/argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h \
+ /usr/include/argos3/core/utility/configuration/base_configurable_resource.h \
+ /usr/include/argos3/core/utility/configuration/argos_configuration.h \
+ /usr/include/argos3/core/utility/datatypes/datatypes.h \
  /usr/local/include/argos3/core/config.h /usr/include/c++/11/iostream \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
@@ -157,16 +157,16 @@ source/CPFA/CMakeFiles/CPFA_loop_functions.dir/CPFA_qt_user_functions.cpp.o: \
  /usr/include/c++/11/bits/basic_ios.tcc \
  /usr/include/c++/11/bits/ostream.tcc /usr/include/c++/11/istream \
  /usr/include/c++/11/bits/istream.tcc \
- /usr/local/include/argos3/core/utility/configuration/argos_exception.h \
+ /usr/include/argos3/core/utility/configuration/argos_exception.h \
  /usr/include/c++/11/sstream /usr/include/c++/11/bits/sstream.tcc \
- /usr/local/include/argos3/core/utility/configuration/tinyxml/ticpp.h \
- /usr/local/include/argos3/core/utility/configuration/tinyxml/tinyxml.h \
+ /usr/include/argos3/core/utility/configuration/tinyxml/ticpp.h \
+ /usr/include/argos3/core/utility/configuration/tinyxml/tinyxml.h \
  /usr/include/c++/11/stdlib.h /usr/include/string.h \
  /usr/include/strings.h \
  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
  /usr/include/assert.h \
- /usr/local/include/argos3/core/utility/configuration/tinyxml/ticpprc.h \
+ /usr/include/argos3/core/utility/configuration/tinyxml/ticpprc.h \
  /usr/include/c++/11/vector /usr/include/c++/11/bits/stl_uninitialized.h \
  /usr/include/c++/11/bits/stl_vector.h \
  /usr/include/c++/11/bits/stl_bvector.h \
@@ -190,12 +190,12 @@ source/CPFA/CMakeFiles/CPFA_loop_functions.dir/CPFA_qt_user_functions.cpp.o: \
  /usr/include/c++/11/backward/auto_ptr.h \
  /usr/include/c++/11/pstl/glue_memory_defs.h \
  /usr/include/c++/11/pstl/execution_defs.h \
- /usr/local/include/argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_main_window.h \
- /usr/local/include/argos3/core/simulator/visualization/visualization.h \
- /usr/local/include/argos3/core/simulator/simulator.h \
- /usr/local/include/argos3/core/utility/math/rng.h \
- /usr/local/include/argos3/core/utility/math/angles.h \
- /usr/local/include/argos3/core/utility/math/general.h \
+ /usr/include/argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_main_window.h \
+ /usr/include/argos3/core/simulator/visualization/visualization.h \
+ /usr/include/argos3/core/simulator/simulator.h \
+ /usr/include/argos3/core/utility/math/rng.h \
+ /usr/include/argos3/core/utility/math/angles.h \
+ /usr/include/argos3/core/utility/math/general.h \
  /usr/include/c++/11/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
@@ -219,15 +219,15 @@ source/CPFA/CMakeFiles/CPFA_loop_functions.dir/CPFA_qt_user_functions.cpp.o: \
  /usr/include/c++/11/tr1/poly_hermite.tcc \
  /usr/include/c++/11/tr1/poly_laguerre.tcc \
  /usr/include/c++/11/tr1/riemann_zeta.tcc \
- /usr/local/include/argos3/core/utility/math/range.h \
- /usr/local/include/argos3/core/utility/string_utilities.h \
+ /usr/include/argos3/core/utility/math/range.h \
+ /usr/include/argos3/core/utility/string_utilities.h \
  /usr/include/c++/11/map /usr/include/c++/11/bits/stl_tree.h \
  /usr/include/c++/11/bits/node_handle.h \
  /usr/include/c++/11/bits/stl_map.h \
  /usr/include/c++/11/bits/stl_multimap.h \
  /usr/include/c++/11/bits/erase_if.h \
- /usr/local/include/argos3/core/simulator/physics_engine/physics_engine.h \
- /usr/local/include/argos3/core/utility/logging/argos_log.h \
+ /usr/include/argos3/core/simulator/physics_engine/physics_engine.h \
+ /usr/include/argos3/core/utility/logging/argos_log.h \
  /usr/include/c++/11/iomanip /usr/include/c++/11/locale \
  /usr/include/c++/11/bits/locale_facets_nonio.h /usr/include/c++/11/ctime \
  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
@@ -239,24 +239,24 @@ source/CPFA/CMakeFiles/CPFA_loop_functions.dir/CPFA_qt_user_functions.cpp.o: \
  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
  /usr/include/c++/11/bits/fstream.tcc /usr/include/c++/11/cstring \
- /usr/local/include/argos3/core/utility/logging/argos_colored_text.h \
- /usr/local/include/argos3/core/utility/math/ray2.h \
- /usr/local/include/argos3/core/utility/math/vector2.h \
- /usr/local/include/argos3/core/utility/math/matrix/matrix.h \
- /usr/local/include/argos3/core/utility/plugins/factory.h \
- /usr/local/include/argos3/core/utility/plugins/factory_impl.h \
- /usr/local/include/argos3/core/simulator/medium/medium.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMainWindow \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmainwindow.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgetsglobal.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qtguiglobal.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qglobal.h \
+ /usr/include/argos3/core/utility/logging/argos_colored_text.h \
+ /usr/include/argos3/core/utility/math/ray2.h \
+ /usr/include/argos3/core/utility/math/vector2.h \
+ /usr/include/argos3/core/utility/math/matrix/matrix.h \
+ /usr/include/argos3/core/utility/plugins/factory.h \
+ /usr/include/argos3/core/utility/plugins/factory_impl.h \
+ /usr/include/argos3/core/simulator/medium/medium.h \
+ /home/qilu/anaconda3/include/qt/QtWidgets/QMainWindow \
+ /home/qilu/anaconda3/include/qt/QtWidgets/qmainwindow.h \
+ /home/qilu/anaconda3/include/qt/QtWidgets/qtwidgetsglobal.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qtguiglobal.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qglobal.h \
  /usr/include/c++/11/cstddef \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qconfig.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qtcore-config.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qsystemdetection.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qprocessordetection.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qcompilerdetection.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qconfig.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qtcore-config.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qsystemdetection.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qprocessordetection.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qcompilerdetection.h \
  /usr/include/c++/11/algorithm /usr/include/c++/11/bits/stl_algo.h \
  /usr/include/c++/11/bits/algorithmfwd.h \
  /usr/include/c++/11/bits/stl_heap.h \
@@ -267,83 +267,40 @@ source/CPFA/CMakeFiles/CPFA_loop_functions.dir/CPFA_qt_user_functions.cpp.o: \
  /usr/include/c++/11/bits/hashtable_policy.h \
  /usr/include/c++/11/bits/enable_special_members.h \
  /usr/include/c++/11/bits/unordered_map.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qtypeinfo.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qcontainerfwd.h \
- /usr/include/c++/11/variant /usr/include/c++/11/bits/parse_numbers.h \
- /usr/include/c++/11/optional \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qsysinfo.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qlogging.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qflags.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qatomic.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qbasicatomic.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qatomic_cxx11.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qgenericatomic.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qtypeinfo.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qsysinfo.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qlogging.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qflags.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qatomic.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qbasicatomic.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qatomic_cxx11.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qgenericatomic.h \
  /usr/include/c++/11/atomic \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qglobalstatic.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qnumeric.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qversiontagging.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qtgui-config.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgets-config.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qwindowdefs.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qobjectdefs.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qnamespace.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qtmetamacros.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qobjectdefs_impl.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qstring.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qchar.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringview.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qbytearray.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qrefcount.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qarraydata.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qpair.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qarraydatapointer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qarraydataops.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qcontainertools_impl.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qglobalstatic.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qnumeric.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qversiontagging.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qtgui-config.h \
+ /home/qilu/anaconda3/include/qt/QtWidgets/qtwidgets-config.h \
+ /home/qilu/anaconda3/include/qt/QtWidgets/qwidget.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qwindowdefs.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qobjectdefs.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qnamespace.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qobjectdefs_impl.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qobject.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qstring.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qchar.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qbytearray.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qrefcount.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qarraydata.h \
  /usr/include/c++/11/iterator /usr/include/c++/11/bits/stream_iterator.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qbytearrayalgorithms.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qbytearrayview.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringliteral.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringalgorithms.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qanystringview.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qutf8stringview.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringtokenizer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qlist.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qhashfunctions.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qlist.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qalgorithms.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qiterator.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qhashfunctions.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qpair.h \
  /usr/include/c++/11/numeric /usr/include/c++/11/bits/stl_numeric.h \
- /usr/include/c++/11/pstl/glue_numeric_defs.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qiterator.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qbytearraylist.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringlist.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qalgorithms.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringmatcher.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qscopedpointer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qmetatype.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qcompare.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qvarlengtharray.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qscopeguard.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qdatastream.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qiodevicebase.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qiterable.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qmetacontainer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qcontainerinfo.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qtaggedpointer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qmath.h \
- /usr/include/c++/11/list /usr/include/c++/11/bits/stl_list.h \
- /usr/include/c++/11/bits/list.tcc \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qobject_impl.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qbindingstorage.h \
- /usr/include/c++/11/chrono /usr/include/c++/11/ratio \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qmargins.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qpaintdevice.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qrect.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qsize.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qpoint.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qpalette.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qcolor.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qrgb.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qrgba64.h \
+ /usr/include/c++/11/pstl/glue_numeric_defs.h /usr/include/c++/11/list \
+ /usr/include/c++/11/bits/stl_list.h /usr/include/c++/11/bits/list.tcc \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
@@ -352,112 +309,126 @@ source/CPFA/CMakeFiles/CPFA_loop_functions.dir/CPFA_qt_user_functions.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qbrush.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qimage.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qpixelformat.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qtransform.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qpolygon.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qregion.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qline.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qpixmap.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qsharedpointer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qshareddata.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qsharedpointer_impl.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qfont.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qfontmetrics.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qfontinfo.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qsizepolicy.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qcursor.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qbitmap.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qkeysequence.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtabwidget.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qicon.h \
- /usr/local/include/argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_widget.h \
- /usr/local/include/argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_camera.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/QObject \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h \
- /usr/local/include/argos3/core/utility/math/ray3.h \
- /usr/local/include/argos3/core/utility/math/vector3.h \
- /usr/include/GL/gl.h /usr/include/GL/glext.h \
- /usr/include/KHR/khrplatform.h /usr/include/GL/glu.h \
- /usr/local/include/argos3/core/simulator/entity/entity.h \
- /usr/local/include/argos3/core/utility/plugins/vtable.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qbytearraylist.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qstringlist.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qregexp.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qstringmatcher.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qscopedpointer.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qmetatype.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qvarlengtharray.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qcontainerfwd.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qobject_impl.h \
+ /usr/include/c++/11/chrono /usr/include/c++/11/ratio \
+ /usr/include/c++/11/bits/parse_numbers.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qmargins.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qpaintdevice.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qrect.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qsize.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qpoint.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qpalette.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qcolor.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qrgb.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qrgba64.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qbrush.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qvector.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qmatrix.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qpolygon.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qregion.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qdatastream.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qiodevice.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qline.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qtransform.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qpainterpath.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qimage.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qpixelformat.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qpixmap.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qsharedpointer.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qshareddata.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qhash.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qsharedpointer_impl.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qfont.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qfontmetrics.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qfontinfo.h \
+ /home/qilu/anaconda3/include/qt/QtWidgets/qsizepolicy.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qcursor.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qkeysequence.h \
+ /home/qilu/anaconda3/include/qt/QtWidgets/qtabwidget.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qicon.h \
+ /usr/include/argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_widget.h \
+ /usr/include/argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_camera.h \
+ /home/qilu/anaconda3/include/qt/QtCore/QObject \
+ /home/qilu/anaconda3/include/qt/QtCore/qobject.h \
+ /usr/include/argos3/core/utility/math/ray3.h \
+ /usr/include/argos3/core/utility/math/vector3.h /usr/include/GL/gl.h \
+ /usr/include/GL/glext.h /usr/include/KHR/khrplatform.h \
+ /usr/include/GL/glu.h /usr/include/argos3/core/simulator/entity/entity.h \
+ /usr/include/argos3/core/utility/plugins/vtable.h \
  /usr/include/c++/11/tr1/unordered_map \
  /usr/include/c++/11/tr1/type_traits \
  /usr/include/c++/11/tr1/functional_hash.h \
  /usr/include/c++/11/tr1/hashtable.h \
  /usr/include/c++/11/tr1/hashtable_policy.h \
  /usr/include/c++/11/tr1/unordered_map.h \
- /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets/QOpenGLWidget \
- /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets/qopenglwidget.h \
- /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets/qtopenglwidgetsglobal.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/QSurfaceFormat \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qsurfaceformat.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qopengl.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qopenglext.h \
+ /home/qilu/anaconda3/include/qt/QtWidgets/QOpenGLWidget \
+ /home/qilu/anaconda3/include/qt/QtWidgets/qopenglwidget.h \
+ /home/qilu/anaconda3/include/qt/QtWidgets/QWidget \
+ /home/qilu/anaconda3/include/qt/QtWidgets/qwidget.h \
+ /home/qilu/anaconda3/include/qt/QtGui/QSurfaceFormat \
+ /home/qilu/anaconda3/include/qt/QtGui/qsurfaceformat.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qopengl.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qopenglext.h \
  /usr/include/inttypes.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/QOpenGLFunctions \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qopenglfunctions.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qopenglcontext.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/QObject \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/QScopedPointer \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qscopedpointer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qnativeinterface.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qvariant.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qmap.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qshareddata_impl.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qhash.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qdebug.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qtextstream.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringconverter.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qset.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qcontiguouscache.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qopenglcontext_platform.h \
- /usr/include/x86_64-linux-gnu/qt6/QtOpenGL/QOpenGLTexture \
- /usr/include/x86_64-linux-gnu/qt6/QtOpenGL/qopengltexture.h \
- /usr/include/x86_64-linux-gnu/qt6/QtOpenGL/qtopenglglobal.h \
- /usr/local/include/argos3/core/utility/datatypes/color.h \
- /usr/local/include/argos3/core/utility/math/quaternion.h \
- /usr/local/include/argos3/core/utility/math/matrix/rotationmatrix3.h \
- /usr/local/include/argos3/core/utility/math/matrix/squarematrix.h \
- /usr/local/include/argos3/plugins/robots/foot-bot/simulator/footbot_entity.h \
- /usr/local/include/argos3/core/simulator/entity/composable_entity.h \
- /usr/local/include/argos3/core/simulator/space/space.h \
- /usr/local/include/argos3/core/utility/datatypes/any.h \
+ /home/qilu/anaconda3/include/qt/QtGui/QOpenGLFunctions \
+ /home/qilu/anaconda3/include/qt/QtGui/qopenglfunctions.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qopenglcontext.h \
+ /home/qilu/anaconda3/include/qt/QtCore/QObject \
+ /home/qilu/anaconda3/include/qt/QtCore/QScopedPointer \
+ /home/qilu/anaconda3/include/qt/QtCore/qscopedpointer.h \
+ /home/qilu/anaconda3/include/qt/QtGui/qopenglversionfunctions.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qvariant.h \
+ /home/qilu/anaconda3/include/qt/QtCore/qmap.h \
+ /home/qilu/anaconda3/include/qt/QtGui/QOpenGLTexture \
+ /home/qilu/anaconda3/include/qt/QtGui/qopengltexture.h \
+ /usr/include/argos3/core/utility/datatypes/color.h \
+ /usr/include/argos3/core/utility/math/quaternion.h \
+ /usr/include/argos3/core/utility/math/matrix/rotationmatrix3.h \
+ /usr/include/argos3/core/utility/math/matrix/squarematrix.h \
+ /usr/include/argos3/plugins/robots/foot-bot/simulator/footbot_entity.h \
+ /usr/include/argos3/core/simulator/entity/composable_entity.h \
+ /usr/include/argos3/core/simulator/space/space.h \
+ /usr/include/argos3/core/utility/datatypes/any.h \
  /usr/include/c++/11/cxxabi.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/cxxabi_tweaks.h \
- /usr/local/include/argos3/core/simulator/entity/embodied_entity.h \
- /usr/local/include/argos3/core/simulator/space/positional_indices/grid.h \
- /usr/local/include/argos3/core/utility/datatypes/set.h \
- /usr/local/include/argos3/core/simulator/space/positional_indices/positional_index.h \
- /usr/local/include/argos3/core/simulator/space/positional_indices/grid_impl.h \
- /usr/local/include/argos3/core/simulator/space/positional_indices/space_hash.h \
- /usr/local/include/argos3/core/simulator/physics_engine/physics_model.h \
- /usr/local/include/argos3/core/simulator/entity/controllable_entity.h \
- /usr/local/include/argos3/core/control_interface/ci_controller.h \
- /usr/local/include/argos3/core/control_interface/ci_sensor.h \
+ /usr/include/argos3/core/simulator/entity/embodied_entity.h \
+ /usr/include/argos3/core/simulator/space/positional_indices/grid.h \
+ /usr/include/argos3/core/utility/datatypes/set.h \
+ /usr/include/argos3/core/simulator/space/positional_indices/positional_index.h \
+ /usr/include/argos3/core/simulator/space/positional_indices/grid_impl.h \
+ /usr/include/argos3/core/simulator/space/positional_indices/space_hash.h \
+ /usr/include/argos3/core/simulator/physics_engine/physics_model.h \
+ /usr/include/argos3/core/simulator/entity/controllable_entity.h \
+ /usr/include/argos3/core/control_interface/ci_controller.h \
+ /usr/include/argos3/core/control_interface/ci_sensor.h \
  /usr/include/lua5.3/lua.h /usr/include/lua5.3/luaconf.h \
  /usr/include/x86_64-linux-gnu/lua5.3-deb-multiarch.h \
  /usr/include/lua5.3/lualib.h /usr/include/lua5.3/lua.h \
  /usr/include/lua5.3/lauxlib.h \
- /usr/local/include/argos3/core/control_interface/ci_actuator.h \
- /usr/local/include/argos3/plugins/simulator/entities/wheeled_entity.h \
- /usr/local/include/argos3/core/simulator/entity/floor_entity.h \
- /home/qlu/Documents/random_drop_CPFA/source/CPFA/CPFA_loop_functions.h \
- /usr/local/include/argos3/core/simulator/loop_functions.h \
- /home/qlu/Documents/random_drop_CPFA/source/CPFA/CPFA_controller.h \
- /home/qlu/Documents/random_drop_CPFA/source/Base/BaseController.h \
- /usr/local/include/argos3/plugins/robots/generic/control_interface/ci_positioning_sensor.h \
- /usr/local/include/argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h \
- /usr/local/include/argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h \
+ /usr/include/argos3/core/control_interface/ci_actuator.h \
+ /usr/include/argos3/plugins/simulator/entities/wheeled_entity.h \
+ /usr/include/argos3/core/simulator/entity/floor_entity.h \
+ /home/qilu/Documents/Collision_Free_CPFA/source/CPFA/CPFA_loop_functions.h \
+ /usr/include/argos3/core/simulator/loop_functions.h \
+ /home/qilu/Documents/Collision_Free_CPFA/source/CPFA/CPFA_controller.h \
+ /home/qilu/Documents/Collision_Free_CPFA/source/Base/BaseController.h \
+ /usr/include/argos3/plugins/robots/generic/control_interface/ci_positioning_sensor.h \
+ /usr/include/argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h \
+ /usr/include/argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h \
  /usr/include/c++/11/stack /usr/include/c++/11/deque \
  /usr/include/c++/11/bits/stl_deque.h /usr/include/c++/11/bits/deque.tcc \
  /usr/include/c++/11/bits/stl_stack.h \
- /home/qlu/Documents/random_drop_CPFA/source/Base/Pheromone.h \
- /usr/local/include/argos3/plugins/robots/generic/control_interface/ci_leds_actuator.h \
- /usr/local/include/argos3/plugins/simulator/entities/cylinder_entity.h \
- /usr/local/include/argos3/plugins/simulator/entities/led_equipped_entity.h \
- /usr/local/include/argos3/plugins/simulator/entities/led_entity.h \
- /usr/local/include/argos3/core/simulator/entity/positional_entity.h
+ /home/qilu/Documents/Collision_Free_CPFA/source/Base/Pheromone.h \
+ /usr/include/argos3/plugins/robots/generic/control_interface/ci_leds_actuator.h \
+ /usr/include/argos3/plugins/simulator/entities/cylinder_entity.h \
+ /usr/include/argos3/plugins/simulator/entities/led_equipped_entity.h \
+ /usr/include/argos3/plugins/simulator/entities/led_entity.h \
+ /usr/include/argos3/core/simulator/entity/positional_entity.h

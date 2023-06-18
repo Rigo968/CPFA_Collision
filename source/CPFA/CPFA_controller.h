@@ -6,6 +6,9 @@
 #include <source/CPFA/CPFA_loop_functions.h>
 /* Definition of the LEDs actuator */
 #include <argos3/plugins/robots/generic/control_interface/ci_leds_actuator.h>
+#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
+#include <argos3/core/simulator/entity/floor_entity.h>
+
 
 using namespace std;
 using namespace argos;
@@ -63,6 +66,7 @@ class CPFA_controller : public BaseController {
 		bool isGivingUpSearch;
   
 		size_t ResourceDensity;
+		size_t RobotDensity; //qilu 06/2023
 		size_t MaxTrailSize;
 		size_t SearchTime;//for informed search
   
@@ -89,6 +93,8 @@ class CPFA_controller : public BaseController {
 		void SetRandomSearchLocation();
 		void SetHoldingFood();
 		void SetLocalResourceDensity();
+		void SetRobotDensity(); //qilu 06/2023
+		
 		void SetFidelityList(argos::CVector2 newFidelity);
 		void SetFidelityList();
 		bool SetTargetPheromone();

@@ -32,6 +32,7 @@ CPFA_loop_functions::CPFA_loop_functions() :
 	RateOfSiteFidelity(0.0),
 	RateOfLayingPheromone(0.0),
 	RateOfPheromoneDecay(0.0),
+	RateOfGiveupInformed(0.0),
 	FoodRadius(0.05),
 	FoodRadiusSquared(0.0025),
 	NestRadius(0.12),
@@ -39,6 +40,7 @@ CPFA_loop_functions::CPFA_loop_functions() :
 	NestElevation(0.01),
 	// We are looking at a 4 by 4 square (3 targets + 2*1/2 target gaps)
 	SearchRadiusSquared((4.0 * FoodRadius) * (4.0 * FoodRadius)),
+	CameraRadiusSquared(1),
 	NumDistributedFood(0),
 	score(0),
 	PrintFinalScore(0)
@@ -56,6 +58,8 @@ void CPFA_loop_functions::Init(argos::TConfigurationNode &node) {
 	argos::GetNodeAttribute(CPFA_node, "RateOfSiteFidelity",                RateOfSiteFidelity);
 	argos::GetNodeAttribute(CPFA_node, "RateOfLayingPheromone",             RateOfLayingPheromone);
 	argos::GetNodeAttribute(CPFA_node, "RateOfPheromoneDecay",              RateOfPheromoneDecay);
+	argos::GetNodeAttribute(CPFA_node, "RateOfGiveupInformed",              RateOfGiveupInformed);
+	
 	argos::GetNodeAttribute(CPFA_node, "PrintFinalScore",                   PrintFinalScore);
 
 	UninformedSearchVariation = ToRadians(USV_InDegrees);
@@ -175,16 +179,31 @@ void CPFA_loop_functions::PreStep() {
         lastNumCollectedFood = currNumCollectedFood;
         last_time_in_minutes++;
     }
+    UpdatePheromoneList();
 
-
-	   UpdatePheromoneList();
-
-	   if(GetSpace().GetSimulationClock() > ResourceDensityDelay) {
-        for(size_t i = 0; i < FoodColoringList.size(); i++) {
+	if(GetSpace().GetSimulationClock() > ResourceDensityDelay) {
+      for(size_t i = 0; i < FoodColoringList.size(); i++) {
             FoodColoringList[i] = argos::CColor::BLACK;
-        }
-	   }
- 
+      }
+	}
+	
+	argos::CVector2 position;
+    argos::CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
+    
+    robotPosList.clear();
+    for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
+      argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
+      BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
+      CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
+      position = c2.GetPosition();
+      robotPosList[c2.GetId()] = position;
+      //robotPosList.push_back(position);
+    }
+    
+    //for(map<string, CVector2>::iterator it= robotPosList.begin(); it!=robotPosList.end(); ++it) {
+	//	argos::LOG << "pos["<< it->first <<"]="<< it->second << endl;
+	//}
+         
     if(FoodList.size() == 0) {
 	FidelityList.clear();
 	PheromoneList.clear();
@@ -564,6 +583,10 @@ unsigned int CPFA_loop_functions::getNumberOfRobots() {
 	return GetSpace().GetEntitiesByType("foot-bot").size();
 }
 
+double CPFA_loop_functions::getRateOfGiveupInformed() {
+	return RateOfGiveupInformed;
+}
+
 double CPFA_loop_functions::getProbabilityOfSwitchingToSearching() {
 	return ProbabilityOfSwitchingToSearching;
 }
@@ -628,6 +651,7 @@ void CPFA_loop_functions::ConfigureFromGenome(Real* g)
 	RateOfSiteFidelity                = g[4];
 	RateOfLayingPheromone             = g[5];
 	RateOfPheromoneDecay              = g[6];
+	RateOfGiveupInformed              = g[7];
 }
 
 REGISTER_LOOP_FUNCTIONS(CPFA_loop_functions, "CPFA_loop_functions")

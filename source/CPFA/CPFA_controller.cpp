@@ -115,6 +115,7 @@ void CPFA_controller::Reset() {
     isInformed      = false;
     SearchTime      = 0;
     ResourceDensity = 0;
+    RobotDensity = 0;
     collisionDelay = 0;
     
   	LoopFunctions->CollisionTime=0; //qilu 09/26/2016
@@ -270,29 +271,29 @@ void CPFA_controller::Departing()
 	    if((SimulationTick() % (SimulationTicksPerSecond() / 2)) == 0) {
 		       if(isInformed == false){
 		           if(SimulationTick()%(5*SimulationTicksPerSecond())==0 && randomNumber < LoopFunctions->ProbabilityOfSwitchingToSearching){
-                 //LOG<<"Switch to search..."<<endl;
-                 Stop();
-                 SearchTime = 0;
-                 CPFA_state = SEARCHING;
-                 travelingTime+=SimulationTick()-startTime;//qilu 10/22
-                 startTime = SimulationTick();//qilu 10/22
-            
-                 argos::Real USV = LoopFunctions->UninformedSearchVariation.GetValue();
-                 argos::Real rand = RNG->Gaussian(USV);
-                 argos::CRadians rotation(rand);
-                 argos::CRadians angle1(rotation.UnsignedNormalize());
-                 argos::CRadians angle2(GetHeading().UnsignedNormalize());
-                 argos::CRadians turn_angle(angle1 + angle2);
-                 argos::CVector2 turn_vector(SearchStepSize, turn_angle);
-                 SetIsHeadingToNest(false);
-                 SetTarget(turn_vector + GetPosition());
-             }
-             else if(distanceToTarget < TargetDistanceTolerance){
-                 SetRandomSearchLocation();
-             }
+                     //LOG<<"Switch to search..."<<endl;
+		                 Stop();
+		                 SearchTime = 0;
+		                 CPFA_state = SEARCHING;
+		                 travelingTime+=SimulationTick()-startTime;//qilu 10/22
+		                 startTime = SimulationTick();//qilu 10/22
+		            
+		                 argos::Real USV = LoopFunctions->UninformedSearchVariation.GetValue();
+		                 argos::Real rand = RNG->Gaussian(USV);
+		                 argos::CRadians rotation(rand);
+		                 argos::CRadians angle1(rotation.UnsignedNormalize());
+		                 argos::CRadians angle2(GetHeading().UnsignedNormalize());
+		                 argos::CRadians turn_angle(angle1 + angle2);
+		                 argos::CVector2 turn_vector(SearchStepSize, turn_angle);
+		                 SetIsHeadingToNest(false);
+		                 SetTarget(turn_vector + GetPosition());
+                   }
+                   else if(distanceToTarget < TargetDistanceTolerance){
+                     SetRandomSearchLocation();
+                   }
          }
-     }
-	
+     } 
+		 
      /* Are we informed? I.E. using site fidelity or pheromones. */	
      if(isInformed && distanceToTarget < TargetDistanceTolerance) {
           //ofstream log_output_stream;
@@ -311,6 +312,27 @@ void CPFA_controller::Departing()
                //log_output_stream.close();
           }
      }
+     else{ // based on the density of robots, decide to do random search
+		 argos::Real poissonCDF_pGiveupInformed = GetPoissonCDF(RobotDensity, LoopFunctions->RateOfGiveupInformed);
+		 argos::Real rdm = RNG->Uniform(argos::CRange<argos::Real>(0.0, 1.0));
+		 if(rdm < poissonCDF_pGiveupInformed){ //random search
+			 Stop();
+			 SearchTime = 0;
+			 CPFA_state = SEARCHING;
+			 travelingTime+=SimulationTick()-startTime;
+			 startTime = SimulationTick();
+		
+			 argos::Real USV = LoopFunctions->UninformedSearchVariation.GetValue();
+			 argos::Real rand = RNG->Gaussian(USV);
+			 argos::CRadians rotation(rand);
+			 argos::CRadians angle1(rotation.UnsignedNormalize());
+			 argos::CRadians angle2(GetHeading().UnsignedNormalize());
+			 argos::CRadians turn_angle(angle1 + angle2);
+			 argos::CVector2 turn_vector(SearchStepSize, turn_angle);
+			 SetIsHeadingToNest(false);
+			 SetTarget(turn_vector + GetPosition());
+	     }
+	 }
 
 
 }
@@ -326,19 +348,19 @@ void CPFA_controller::Searching() {
 		   argos::CVector2 distance = GetPosition() - GetTarget();
 		   argos::Real     random   = RNG->Uniform(argos::CRange<argos::Real>(0.0, 1.0));
      
-     // If we reached our target search location, set a new one. The 
-     // new search location calculation is different based on whether
-     // we are currently using informed or uninformed search.
-     if(distance.SquareLength() < TargetDistanceTolerance) {
+       // If we reached our target search location, set a new one. The 
+       // new search location calculation is different based on whether
+       // we are currently using informed or uninformed search.
+       if(distance.SquareLength() < TargetDistanceTolerance) {
          // randomly give up searching
          if(SimulationTick()% (5*SimulationTicksPerSecond())==0 && random < LoopFunctions->ProbabilityOfReturningToNest) {
              
              SetFidelityList();
-	      TrailToShare.clear();
+	         TrailToShare.clear();
              SetIsHeadingToNest(true);
              SetTarget(LoopFunctions->NestPosition);
              isGivingUpSearch = true;
-	     LoopFunctions->FidelityList.erase(controllerID);
+	         LoopFunctions->FidelityList.erase(controllerID);
              isUsingSiteFidelity = false; 
              updateFidelity = false; 
              CPFA_state = RETURNING;
@@ -427,11 +449,13 @@ void CPFA_controller::Searching() {
                   SetTarget(turn_vector + GetPosition());
               }
          }
-		   }
-		   else {
-			      //argos::LOG << "SEARCH: Haven't reached destination. " << GetPosition() << "," << GetTarget() << std::endl;
-		   }
-	}
+	  } //not reach the target location
+	  else {
+			 //argos::LOG << "SEARCH: Haven't reached destination. " << GetPosition() << "," << GetTarget() << std::endl;
+		
+			 
+	  }
+    }
 	else {
 		   //argos::LOG << "SEARCH: Carrying food." << std::endl;
 	}
@@ -448,7 +472,7 @@ void CPFA_controller::Searching() {
 void CPFA_controller::Surveying() {
  //LOG<<"Surveying..."<<endl;
 	if (survey_count <= 4) { 
-		CRadians rotation(survey_count*3.14/2); // divide by 10 so the vecot is small and the linear motion is minimized
+		CRadians rotation(survey_count*3.14/2); // divide by 10 so the vector is small and the linear motion is minimized
 		argos::CVector2 turn_vector(SearchStepSize, rotation.SignedNormalize());
 			
 		SetIsHeadingToNest(true); // Turn off error for this
@@ -550,7 +574,7 @@ void CPFA_controller::Returning() {
         startTime = SimulationTick();//qilu 10/22
                 
     }
-	// Take a small step towards the nest so we don't overshoot by too much is we miss it
+	// Take a small step towards the nest so we don't overshoot by too much if we miss it
     else 
     {
         if(IsAtTarget())
@@ -571,7 +595,9 @@ void CPFA_controller::Returning() {
         SetTarget(turn_vector + GetPosition());
         }
         //detect other robots in its camera view
-        
+        if(SimulationTick()% (5*SimulationTicksPerSecond())==0 ){
+			SetRobotDensity();
+	    }
     }		
 }
 
@@ -625,8 +651,8 @@ void CPFA_controller::SetHoldingFood() {
 	        	             isHoldingFood = true;
 		                     CPFA_state = SURVEYING;
 	        	             j = i + 1;
-                                     searchingTime+=SimulationTick()-startTime;
-                                     startTime = SimulationTick();
+                             searchingTime+=SimulationTick()-startTime;
+                             startTime = SimulationTick();
 				   //distribute a new food 
 			         argos::CVector2 placementPosition;
 			         placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
@@ -674,6 +700,42 @@ void CPFA_controller::SetHoldingFood() {
   /*if(IsHoldingFood() && SimulationTick() % LoopFunctions->DrawDensityRate == 0) {
         TrailToShare.push_back(GetPosition());
   }*/
+}
+
+void CPFA_controller::SetRobotDensity() {
+	argos::CVector2 distance;
+	RobotDensity = 0;
+
+	/* Calculate resource density based on the global food list positions. */
+	
+	for(map<string, CVector2>::iterator it= LoopFunctions->robotPosList.begin(); it!=LoopFunctions->robotPosList.end(); ++it){
+		if(controllerID.compare(it->first) != 0){
+		  distance = GetPosition() - it->second;
+		  if(distance.SquareLength() < LoopFunctions->CameraRadiusSquared) {
+		    RobotDensity++;
+	        //LoopFunctions->FoodColoringList[i] = argos::CColor::ORANGE;
+		    //LoopFunctions->ResourceDensityDelay = SimulationTick() + SimulationTicksPerSecond() * 10;
+		  }
+		}
+	}
+	
+	/*for(size_t i = 0; i < LoopFunctions->robotPosList.size(); i++) {
+		   distance = GetPosition() - LoopFunctions->robotPosList[i];
+
+		   if(distance.SquareLength() < LoopFunctions->CameraRadiusSquared) {
+			      RobotDensity++;
+			      //LoopFunctions->FoodColoringList[i] = argos::CColor::ORANGE;
+			      //LoopFunctions->ResourceDensityDelay = SimulationTick() + SimulationTicksPerSecond() * 10;
+		   }
+	} */
+	
+	argos::LOG << controllerID<< " detects " << RobotDensity<< " robots."<<endl;
+	/* Set the fidelity position to the robot's current position. */
+    //SiteFidelityPosition = GetPosition();
+    //isUsingSiteFidelity = true;
+    //updateFidelity = true; 
+    //TrailToShare.push_back(SiteFidelityPosition);
+    //LoopFunctions->FidelityList[controllerID] = SiteFidelityPosition;
 }
 
 /*****
