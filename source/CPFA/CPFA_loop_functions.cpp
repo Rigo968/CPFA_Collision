@@ -33,6 +33,7 @@ CPFA_loop_functions::CPFA_loop_functions() :
 	RateOfLayingPheromone(0.0),
 	RateOfPheromoneDecay(0.0),
 	RateOfGiveupInformed(0.0),
+	RateOfGiveupReturning(0.0),
 	FoodRadius(0.05),
 	FoodRadiusSquared(0.0025),
 	NestRadius(0.12),
@@ -40,7 +41,7 @@ CPFA_loop_functions::CPFA_loop_functions() :
 	NestElevation(0.01),
 	// We are looking at a 4 by 4 square (3 targets + 2*1/2 target gaps)
 	SearchRadiusSquared((4.0 * FoodRadius) * (4.0 * FoodRadius)),
-	CameraRadiusSquared(1),
+	CameraRadiusSquared(1.0),
 	NumDistributedFood(0),
 	score(0),
 	PrintFinalScore(0)
@@ -59,6 +60,7 @@ void CPFA_loop_functions::Init(argos::TConfigurationNode &node) {
 	argos::GetNodeAttribute(CPFA_node, "RateOfLayingPheromone",             RateOfLayingPheromone);
 	argos::GetNodeAttribute(CPFA_node, "RateOfPheromoneDecay",              RateOfPheromoneDecay);
 	argos::GetNodeAttribute(CPFA_node, "RateOfGiveupInformed",              RateOfGiveupInformed);
+	argos::GetNodeAttribute(CPFA_node, "RateOfGiveupReturning",              RateOfGiveupReturning);
 	
 	argos::GetNodeAttribute(CPFA_node, "PrintFinalScore",                   PrintFinalScore);
 
@@ -604,6 +606,10 @@ double CPFA_loop_functions::getRateOfInformedSearchDecay() {
 	return RateOfInformedSearchDecay;
 }
 
+double CPFA_loop_functions::getRateOfGiveupReturning() {
+	return RateOfGiveupReturning;
+}
+
 double CPFA_loop_functions::getRateOfSiteFidelity() {
 	return RateOfSiteFidelity;
 }
@@ -652,6 +658,7 @@ void CPFA_loop_functions::ConfigureFromGenome(Real* g)
 	RateOfLayingPheromone             = g[5];
 	RateOfPheromoneDecay              = g[6];
 	RateOfGiveupInformed              = g[7];
+	RateOfGiveupReturning             = g[8];
 }
 
 REGISTER_LOOP_FUNCTIONS(CPFA_loop_functions, "CPFA_loop_functions")

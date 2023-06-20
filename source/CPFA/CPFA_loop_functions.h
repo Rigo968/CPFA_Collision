@@ -66,6 +66,7 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		double getRateOfLayingPheromone();
 		double getRateOfPheromoneDecay();
 		double getRateOfGiveupInformed();
+		double getRateOfGiveupReturning();
 
 	protected:
 
@@ -105,6 +106,7 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		argos::Real RateOfLayingPheromone;
 		argos::Real RateOfPheromoneDecay;
 		argos::Real RateOfGiveupInformed;
+		argos::Real RateOfGiveupReturning;
 
 		/* physical robot & world variables */
 		argos::Real FoodRadius;

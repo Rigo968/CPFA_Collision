@@ -31,7 +31,8 @@ void CPFA_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
 	points.push_back(CVector2(0.71, -0.71));
 
 
-	DrawPolygon(CVector3(0, 0, 0.002), CQuaternion(), points, argos::CColor::ORANGE);
+	DrawPolygon(CVector3(0, 0, 0.002), CQuaternion(), points, argos::CColor::RED, false);
+	//DrawCircle(CVector3(0, 0, 0.002), CQuaternion(), 0.5, argos::CColor::RED, false);
 	
 	if(c.IsHoldingFood()) {
 		DrawCylinder(CVector3(0.0, 0.0, 0.3), CQuaternion(), loopFunctions.FoodRadius, 0.025, CColor::BLACK);
