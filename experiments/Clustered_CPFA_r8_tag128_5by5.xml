@@ -39,12 +39,20 @@
   <loop_functions label="CPFA_loop_functions" library="build/source/CPFA/libCPFA_loop_functions">
 
     <!-- evolvable parameters -->
-        <CPFA PrintFinalScore="1" ProbabilityOfReturningToNest="0.0147598869881" ProbabilityOfSwitchingToSearching="0.723128706375" RateOfInformedSearchDecay="0.205799848158" RateOfLayingPheromone="14.7027566005" RateOfPheromoneDecay="0.0245057227138" RateOfSiteFidelity="14.1514206414" RateOfGiveupInformed="14.7027566005" RateOfGiveupReturning="10" UninformedSearchVariation="2.81939731297"/>
-
+        <CPFA PrintFinalScore="1" ProbabilityOfReturningToNest="0.0189370369448" 
+        ProbabilityOfSwitchingToSearching="0.765015191742" 
+        RateOfInformedSearchDecay="0.346149969858" 
+        RateOfLayingPheromone="14.4422484524" 
+        RateOfPheromoneDecay="0.337487746208" 
+        RateOfSiteFidelity="1.376331398" 
+        UninformedSearchVariation="3.67372660634"
+         RateOfGiveupInformed="3" 
+         RateOfGiveupReturning="2" />
+        
          <settings ClusterWidthX="8" ClusterWidthY="8" DrawDensityRate="4" DrawIDs="1" 
 	 DrawTargetRays="0" DrawTrails="0" FoodDistribution="1" FoodItemCount="128" 
 	 FoodRadius="0.05" MaxSimCounter="1" MaxSimTimeInSeconds="1800" 
-	 NestElevation="0.001" NestPosition="0,0" NestRadius="0.15" NumberOfClusters="2" OutputData="0" 
+	 NestElevation="0.001" NestPosition="0,0" NestRadius="0.12" NumberOfClusters="2" OutputData="0" 
 	 PowerlawFoodUnitCount="256" VariableFoodPlacement="0"/>
 
   </loop_functions>

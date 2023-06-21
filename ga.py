@@ -11,6 +11,7 @@ import argparse
 import errno
 import copy
 from lxml import etree
+import xml.etree.ElementTree as ET
 import logging
 import pdb
 
@@ -59,7 +60,7 @@ class iAntGA(object):
         
         name_and_extension = xml_file.split(".")
         XML_FILE_NAME = name_and_extension[0]
-        for _ in xrange(pop_size):
+        for _ in range(pop_size):
             self.population.append(argos_util.uniform_rand_argos_xml(xml_file, robots, length, system))
         #dirstring = str(self.starttime) + "_e_" + str(elites) + "_p_" + str(pop_size) + "_r_" + str(robots) + "_t_" + \
         dirstring = XML_FILE_NAME +"_" + str(self.starttime) + "_e_" + str(elites) + "_p_" + str(pop_size) + "_r_" + \
@@ -70,7 +71,8 @@ class iAntGA(object):
         
     def test_fitness(self, argos_xml, seed):
         argos_util.set_seed(argos_xml, seed)
-        xml_str = etree.tostring(argos_xml)
+        xml_str = etree.tostring(argos_xml).decode('utf-8')
+       
         cwd = os.getcwd()
         tmpf = tempfile.NamedTemporaryFile('w', suffix=".argos", prefix="gatmp",
                                            dir=os.path.join(cwd, "experiments"),
@@ -90,8 +92,8 @@ class iAntGA(object):
             return 0
         lines = argos_run.stdout.readlines()
         if os.path.exists(tmpf.name):
-	    os.unlink(tmpf.name)
-        print lines[-1]
+	        os.unlink(tmpf.name)
+        print(lines[-1])
         logging.info("partial fitness = %f", float(lines[-1].strip().split(",")[0]))
         return float(lines[-1].strip().split(",")[0])
 
@@ -105,16 +107,16 @@ class iAntGA(object):
         seeds = [np.random.randint(2 ** 32) for _ in range(self.tests_per_gen)]
         logging.info("Seeds for generation: " + str(seeds))
         for i, p in enumerate(self.population):
-            print "Gen: "+str(self.current_gen)+'; Population: '+str(i+1)
-            for test_id in xrange(self.tests_per_gen):
+            print("Gen: "+str(self.current_gen)+'; Population: '+str(i+1))
+            for test_id in range(self.tests_per_gen):
                 seed = seeds[test_id]
                 logging.info("pop %d at test %d with seed %d", i, test_id, seed)
                 if self.not_evolved_idx[i] == -1 or self.not_evolved_count[i] > 3:
                     self.not_evolved_count[i] =0;    
                     self.fitness[i] += self.test_fitness(p, seed)
                 else: #qilu 03/27/2016 avoid recompute
-		    self.fitness[i] += self.prev_fitness[self.not_evolved_idx[i]] 
-	            logging.info("partial fitness = %d", self.prev_fitness[self.not_evolved_idx[i]])
+                    self.fitness[i] += self.prev_fitness[self.not_evolved_idx[i]] 
+                    logging.info("partial fitness = %d", self.prev_fitness[self.not_evolved_idx[i]])
         # use average fitness as fitness
         for i in xrange(len(self.fitness)):
             logging.info("pop %d total fitness = %g", i, self.fitness[i])
@@ -131,7 +133,7 @@ class iAntGA(object):
 
         self.prev_population = copy.deepcopy(self.population)
         self.prev_fitness = copy.deepcopy(self.fitness) #qilu 03/27
-	self.prev_not_evolved_count = copy.deepcopy(self.not_evolved_count) #qilu 04/02
+        self.prev_not_evolved_count = copy.deepcopy(self.not_evolved_count) #qilu 04/02
 
         self.not_evolved_idx=[] #qilu 03/27/2016
         self.not_evolved_count = [] #qilu 04/02/2016
@@ -178,9 +180,9 @@ class iAntGA(object):
                 self.population.append(child)
                 if argos_util.get_parameters(parent1) == argos_util.get_parameters(child):
                     #pdb.set_trace()
-	       	    self.not_evolved_idx.append(idx1)
+                    self.not_evolved_idx.append(idx1)
                     self.not_evolved_count.append(self.prev_not_evolved_count[idx1] + 1)
-	       	elif argos_util.get_parameters(parent2) == argos_util.get_parameters(child):
+                elif argos_util.get_parameters(parent2) == argos_util.get_parameters(child):
                     #pdb.set_trace()
                     self.not_evolved_idx.append(idx2) 
                     self.not_evolved_count.append(self.prev_not_evolved_count[idx2] + 1)
@@ -216,18 +218,18 @@ class iAntGA(object):
         current_diversity_rate = normalized_stds.max()
         if current_diversity_rate<=diversity_rate and current_fitness_rate>= fitness_convergence_rate:
             self.terminateFlag = 1
-            print "Convergent ..."
-            print 
+            print("Convergent ...")
+            print() 
         elif current_diversity_rate>diversity_rate and current_fitness_rate<fitness_convergence_rate:
-            print 'Fitness is not convergent ...'
-            print 'Fitness rate is '+str(current_fitness_rate)
-            print 'Deviation is '+str(current_diversity_rate)
+            print('Fitness is not convergent ...')
+            print('Fitness rate is '+str(current_fitness_rate))
+            print('Deviation is '+str(current_diversity_rate))
         elif current_diversity_rate > diversity_rate:
-            print 'population diversity is high ...'
-            print 'The curent standard deviation is '+str(current_diversity_rate)+', which is greater than '+str(diversity_rate)+' ...'
+            print('population diversity is high ...')
+            print('The curent standard deviation is '+str(current_diversity_rate)+', which is greater than '+str(diversity_rate)+' ...')
         else:
-            print 'Fitness is not convergent ...'
-            print 'The current rate of mean of fitness is '+str(current_fitness_rate)+', which is less than '+str(fitness_convergence_rate)+' ...'
+            print('Fitness is not convergent ...')
+            print('The current rate of mean of fitness is '+str(current_fitness_rate)+', which is less than '+str(fitness_convergence_rate)+' ...')
 
 
     def save_population(self, seed):
@@ -286,20 +288,20 @@ if __name__ == "__main__":
     terminateFlag = 0
     
     args = parser.parse_args()
-    print "pop_size ="+ str(pop_size)
-    print "gens="+str(gens)
-    print "elites="+ str(elites)
-    print "mut_rate="+str(mut_rate)
+    print("pop_size ="+ str(pop_size))
+    print("gens="+str(gens))
+    print("elites="+ str(elites))
+    print("mut_rate="+str(mut_rate))
     #print "robots="+str(robots)
     #print "tags="+str(tags)
     #print "time="+str(length/60)+" minutes"
-    print "Evaluation="+str(tests_per_gen)
+    print("Evaluation="+str(tests_per_gen))
     
     #xml_file = raw_input('Choose a file name(e.g. cluster_2_mac.argos)')
     
     if args.xml_file:
-		xml_file = args.xml_file
-		print "The input file: "+xml_file
+        xml_file = args.xml_file
+        print("The input file: "+xml_file)
     if args.pop_size:
         pop_size = args.pop_size
 
@@ -332,5 +334,5 @@ if __name__ == "__main__":
     start = time.time()
     ga.run_ga()
     stop = time.time()
-    print 'The loaded file is '+ xml_file+' ...'
-    print 'It runs '+str((stop-start)/3600.0)+ ' hours...'
+    print('The loaded file is '+ xml_file+' ...')
+    print('It runs '+str((stop-start)/3600.0)+ ' hours...')

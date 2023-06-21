@@ -307,7 +307,8 @@ void CPFA_controller::Departing()
           }
      }
      else{ // based on the density of robots, decide to do random search
-		 if(SimulationTick()% (5*SimulationTicksPerSecond())==0 ){
+		 if(isInformed == true && SimulationTick()% SimulationTicksPerSecond() ==0 ){
+			 //LOG<<"Departing..."<<endl;
 			SetRobotDensity();
 		
 			 argos::Real poissonCDF_pGiveupInformed = GetPoissonCDF(RobotDensity, LoopFunctions->RateOfGiveupInformed);
@@ -316,7 +317,7 @@ void CPFA_controller::Departing()
 				 
 				 SetRandomSearchLocation();
 				 Stop();
-				 argos::LOG<<controllerID<< " *** give up informed search ... "<< endl;
+				 //argos::LOG<<controllerID<< " *** give up informed search and switch to random search... "<< endl;
 		     }
 	      }
 	 }
@@ -461,7 +462,7 @@ void CPFA_controller::Surveying() {
 	if (survey_count <= 4) { 
 		CRadians rotation(survey_count*3.14/2); // divide by 10 so the vector is small and the linear motion is minimized
 		argos::CVector2 turn_vector(SearchStepSize, rotation.SignedNormalize());
-			
+		
 		SetIsHeadingToNest(true); // Turn off error for this
 		SetTarget(turn_vector + GetPosition());
 		
@@ -576,8 +577,10 @@ void CPFA_controller::Returning() {
 	        SetTarget(turn_vector + GetPosition());
         }
         //detect other robots in its camera view
-        if(SimulationTick()% (5*SimulationTicksPerSecond())==0 ){
-			SetRobotDensity();
+        //if(SimulationTick()% (5*SimulationTicksPerSecond())==0 ){
+		if(SimulationTick()% SimulationTicksPerSecond() ==0 ){
+				SetRobotDensity();
+			//LOG<<"Returning..."<<endl;
 			argos::Real poissonCDF_pGiveupReturn = GetPoissonCDF(RobotDensity, LoopFunctions->RateOfGiveupReturning);
 		    argos::Real rdm = RNG->Uniform(argos::CRange<argos::Real>(0.0, 1.0));
 		    
@@ -597,7 +600,7 @@ void CPFA_controller::Returning() {
                 travelingTime+=SimulationTick()-startTime;
                 startTime = SimulationTick();
                 Stop();
-                argos::LOG<<controllerID<< " *** give up returning ... "<< endl;
+                //argos::LOG<<controllerID<< " *** give up returning ... "<< endl;
 			}
 			
 	    }
@@ -650,30 +653,32 @@ void CPFA_controller::SetHoldingFood() {
 		    size_t i = 0, j = 0;
       //if(CPFA_state != RETURNING){
 		         for(i = 0; i < LoopFunctions->FoodList.size(); i++) {
-			            if((GetPosition() - LoopFunctions->FoodList[i]).SquareLength() < FoodDistanceTolerance ) {
-		          // We found food! Calculate the nearby food density.
-	        	             isHoldingFood = true;
-		                     CPFA_state = SURVEYING;
-	        	             j = i + 1;
-                             searchingTime+=SimulationTick()-startTime;
-                             startTime = SimulationTick();
-				   //distribute a new food 
-			         argos::CVector2 placementPosition;
-			         placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
-			          
-			         while(LoopFunctions->IsOutOfBounds(placementPosition, 1, 1)){
-			             placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
-			         }
-			         newFoodList.push_back(placementPosition);
-					 newFoodColoringList.push_back(LoopFunctions->FoodColoringList[i]);
-                    LoopFunctions->increaseNumDistributedFoodByOne(); //the total number of cubes in the arena should be updated. qilu 11/15/2018
-					 //end
-                                     break;
-			             } else {
-                      //Return this unfound-food position to the list
-                            newFoodList.push_back(LoopFunctions->FoodList[i]);
-                            newFoodColoringList.push_back(LoopFunctions->FoodColoringList[i]);
-                         }
+			            
+		            if((GetPosition() - LoopFunctions->FoodList[i]).SquareLength() < FoodDistanceTolerance ) {
+						// We found food! Calculate the nearby food density.
+        	             isHoldingFood = true;
+	                     CPFA_state = SURVEYING;
+        	             j = i + 1;
+						 searchingTime+=SimulationTick()-startTime;
+						 startTime = SimulationTick();
+						 
+					   //distribute a new food 
+				       /*  argos::CVector2 placementPosition;
+				         placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
+				          
+				         while(LoopFunctions->IsOutOfBounds(placementPosition, 1, 1)){
+				             placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
+				         }
+				         newFoodList.push_back(placementPosition);
+						 newFoodColoringList.push_back(LoopFunctions->FoodColoringList[i]);
+	                    LoopFunctions->increaseNumDistributedFoodByOne(); //the total number of cubes in the arena should be updated. qilu 11/15/2018
+						 //end
+	                     break; */
+			         } else {
+                       //Return this unfound-food position to the list
+                       newFoodList.push_back(LoopFunctions->FoodList[i]);
+                       newFoodColoringList.push_back(LoopFunctions->FoodColoringList[i]);
+                     }
                  }
       //}
       if(j>0){
@@ -707,16 +712,16 @@ void CPFA_controller::SetHoldingFood() {
 }
 
 void CPFA_controller::SetRobotDensity() {
-	argos::CVector2 vect;
+	argos::CVector2 vect1, vect2;
 	RobotDensity = 0;
     argos::Real  lowerPt, upperPt;
     bool split; // the angle is in [-pi, pi]. If the camera range on both sides of the angle pi, we need to split the range into two ranges.
-    argos::Real neighborAngle; 
+    argos::Real neighborAngle, targetAngle; 
     /* Calculate resource density based on the global food list positions. */
 	
 	for(map<string, CVector2>::iterator it= LoopFunctions->robotPosList.begin(); it!=LoopFunctions->robotPosList.end(); ++it){
 		if(controllerID.compare(it->first) != 0){
-		  vect = it->second - GetPosition();
+		  vect1 = it->second - GetPosition();
 		  //argos::LOG<<controllerID<<" current position= "<< GetPosition()<<endl;
 		  //argos::LOG<<"Heading = "<< GetHeading().GetValue()<< endl;
 		  
@@ -726,7 +731,7 @@ void CPFA_controller::SetRobotDensity() {
 	      lowerPt = (GetHeading() - (argos::CRadians::PI)/4.0).GetValue();      
 	      upperPt = (GetHeading() + (argos::CRadians::PI)/4.0).GetValue();
 	      
-	      neighborAngle = atan2(vect.GetY(), vect.GetX());
+	      neighborAngle = atan2(vect1.GetY(), vect1.GetX());
 	      
 	      //argos::LOG<<"lowerPt ="<<lowerPt<<endl;
 	      //argos::LOG<<"upperPt ="<<upperPt<<endl;
@@ -744,9 +749,18 @@ void CPFA_controller::SetRobotDensity() {
 	      }
 	      
 	      //argos::LOG<<it->first<< " robot position= " << it->second <<endl; 
-		  //argos::LOG<<"vect ="<< vect<< ", angle=" << neighborAngle << endl;
+		  //argos::LOG<<"vect1 ="<< vect1<< ", angle=" << neighborAngle << endl;
 		    
-		  if(vect.SquareLength() < LoopFunctions->CameraRadiusSquared){  
+		  vect2 = GetTarget() - GetPosition();
+		  
+		  targetAngle = atan2(vect2.GetY(), vect2.GetX());
+		  
+		  //argos::LOG<<"GetHeading().GetValue()-targetAngle = "<< fabs(GetHeading().GetValue()-targetAngle) <<endl;
+		  if(vect1.SquareLength() < LoopFunctions->CameraRadiusSquared && fabs(GetHeading().GetValue()-targetAngle)<= 0.35){ // 0.35 = 20 degree
+			//argos::LOG<<"GetTarget()="<<GetTarget()<< endl;
+		    //argos::LOG<<"GetPosition()=" << GetPosition() <<endl;
+		    //argos::LOG<<"vect2 = " << vect2 << endl;     
+		  
 		    if(split){
 			  if( (neighborAngle >= -3.1415 && neighborAngle <= upperPt) || (neighborAngle >= lowerPt && neighborAngle <= 3.1415) ){
 				 RobotDensity++;  
@@ -757,11 +771,12 @@ void CPFA_controller::SetRobotDensity() {
 		      RobotDensity++;
 		      //argos::LOG<<"*** in the range ***" <<endl;
 		    }
+		    //argos::LOG << controllerID<< " detects " << RobotDensity<< " robots."<<endl;
 		  }
 		
 	  }
 	}
-	//argos::LOG << controllerID<< " detects " << RobotDensity<< " robots."<<endl;
+	
 }
 
 /*****
@@ -788,13 +803,13 @@ void CPFA_controller::SetLocalResourceDensity() {
 
 	/* Calculate resource density based on the global food list positions. */
 	for(size_t i = 0; i < LoopFunctions->FoodList.size(); i++) {
-		   distance = GetPosition() - LoopFunctions->FoodList[i];
+	  distance = GetPosition() - LoopFunctions->FoodList[i];
 
-		   if(distance.SquareLength() < LoopFunctions->SearchRadiusSquared*2) { //multiply 2 to use the diagonal distance
-			      ResourceDensity++;
-			      LoopFunctions->FoodColoringList[i] = argos::CColor::ORANGE;
-			      LoopFunctions->ResourceDensityDelay = SimulationTick() + SimulationTicksPerSecond() * 10;
-		   }
+	  if(distance.SquareLength() < LoopFunctions->SearchRadiusSquared*2) { //multiply 2 to use the diagonal distance
+	    ResourceDensity++;
+		LoopFunctions->FoodColoringList[i] = argos::CColor::ORANGE;
+		LoopFunctions->ResourceDensityDelay = SimulationTick() + SimulationTicksPerSecond() * 10;
+	  }
 	}
  
 	/* Set the fidelity position to the robot's current position. */

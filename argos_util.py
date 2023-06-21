@@ -13,12 +13,14 @@ MAC_LOOP_LIB = "build/loop_functions/libiAnt_loop_functions.dylib"
     
 PARAMETER_LIMITS = {
     "RateOfLayingPheromone": (0, 20),
-    "RateOfPheromoneDecay": (0, 1), #qilu 04/25 the sampled maximum 0.99 in 5000. The mean is 0.1 03/27/2016 exponential distribtion
+    "RateOfPheromoneDecay": (0, 1), #the sampled maximum 0.99 in 5000. The mean is 0.1 03/27/2016 exponential distribtion
     "ProbabilityOfSwitchingToSearching": (0, 1),
-    "RateOfSiteFidelity": (0, 20),
-    "RateOfInformedSearchDecay": (0, 2), #qilu 04/25 the sampled maximum is around 2.0,  03/27/2016 exponential distribtion
+    "RateOfSiteFidelity": (0, 16),
+    "RateOfInformedSearchDecay": (0, 2), # the sampled maximum is around 2.0,  03/27/2016 exponential distribtion
     "ProbabilityOfReturningToNest": (0, 0.05),
-    "UninformedSearchVariation": (0, 90)
+    "UninformedSearchVariation": (0, 45),
+    "RateOfGiveupInformed": (0, 10),
+    "RateOfGiveupReturning": (0, 10)
 }
 
 def load_xml_default(xml_file):
@@ -110,7 +112,7 @@ def mutate_parameters(argos_xml, probability):
                 if val<0: val = -val
             else:
                 val += PARAMETER_LIMITS[key][1]*np.random.normal(0, 0.02)  # It should be scaled by the range of each parameter 10/12/2015
-	        while(val > PARAMETER_LIMITS[key][1] or val < PARAMETER_LIMITS[key][0]):
+                while(val > PARAMETER_LIMITS[key][1] or val < PARAMETER_LIMITS[key][0]):
                     if val > PARAMETER_LIMITS[key][1]:
                         val = 2*PARAMETER_LIMITS[key][1]-val
                     elif val < PARAMETER_LIMITS[key][0]:
@@ -256,11 +258,11 @@ if __name__ == "__main__":
             robots=args.robots
         if args.system:
             system = args.system
-        print create_argos_from_paramters(pop[0], sradius, robots, length, system)
+        print(create_argos_from_paramters(pop[0], sradius, robots, length, system))
     elif args.all:
         for p in pop:
-            print "Fitness:", p["fitness"]
-            print xml_string_parameter_chunk(p)
+            print("Fitness:", p["fitness"])
+            print(xml_string_parameter_chunk(p))
     else:
-        print "Fitness:", pop[0]["fitness"]
-        print xml_string_parameter_chunk(pop[0])
+        print("Fitness:", pop[0]["fitness"])
+        print(xml_string_parameter_chunk(pop[0]))

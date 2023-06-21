@@ -30,7 +30,23 @@ void CPFA_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
 	points.push_back(CVector2(0.83, -0.55));
 	points.push_back(CVector2(0.71, -0.71));
 
+/* 
+ points.push_back(CVector2(1.065,1.065));
+	
+	points.push_back(CVector2(1.245,0.825));
+	
+	points.push_back(CVector2(1.38, 0.57));
+	points.push_back(CVector2(1.47,0.3));
+	points.push_back(CVector2(1.5,0));
+	
+	points.push_back(CVector2(1.47,-0.3));
+	
+	points.push_back(CVector2(1.38, -0.57));
+	
+	points.push_back(CVector2(1.245, -0.825));
+	points.push_back(CVector2(1.065, -1.065));
 
+ */
 	DrawPolygon(CVector3(0, 0, 0.002), CQuaternion(), points, argos::CColor::RED, false);
 	//DrawCircle(CVector3(0, 0, 0.002), CQuaternion(), 0.5, argos::CColor::RED, false);
 	
