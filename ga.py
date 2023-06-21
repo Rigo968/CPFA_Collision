@@ -94,8 +94,9 @@ class iAntGA(object):
         if os.path.exists(tmpf.name):
 	        os.unlink(tmpf.name)
         print(lines[-1])
-        logging.info("partial fitness = %f", float(lines[-1].strip().split(",")[0]))
-        return float(lines[-1].strip().split(",")[0])
+        logging.info("partial fitness = %f", float(lines[-1].decode('utf8').strip().split(",")[0]))
+        
+        return float(lines[-1].decode('utf8').strip().split(",")[0])
 
     def run_ga(self):
         while self.current_gen <=self.gens and self.terminateFlag == 0:

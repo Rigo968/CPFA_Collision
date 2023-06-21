@@ -189,7 +189,6 @@ void CPFA_loop_functions::PreStep() {
             FoodColoringList[i] = argos::CColor::BLACK;
       }
 	}
-	
 	argos::CVector2 position;
     argos::CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
     

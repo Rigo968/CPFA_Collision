@@ -99,9 +99,10 @@ void CPFA_controller::ControlStep() {
 	CVector3 target3d(previous_position.GetX(), previous_position.GetY(), 0.00);
 	CRay3 targetRay(target3d, position3d);
 	myTrail.push_back(targetRay);
-	LoopFunctions->TargetRayList.push_back(targetRay);
-	LoopFunctions->TargetRayColorList.push_back(TrailColor);
-
+	//since it costs a lot of memeory, I commented it. qilu 06/2023. You can uncomment it if you want to show the trails.
+	//LoopFunctions->TargetRayList.push_back(targetRay);
+	//LoopFunctions->TargetRayColorList.push_back(TrailColor);
+    //argos::LOG<< "TargetRayList size =" << LoopFunctions->TargetRayList.size() <<endl;
 	previous_position = GetPosition();
 
 	//UpdateTargetRayList();
@@ -510,6 +511,7 @@ void CPFA_controller::Returning() {
           //LoopFunctions->CollectedFoodList.push_back(placementPosition);
           //Update the location of the nest qilu 09/10
           num_targets_collected++;
+          //argos::LOG <<"num_targets_collected = "<<num_targets_collected<< endl;
 		  LoopFunctions->currNumCollectedFood++;
           LoopFunctions->setScore(num_targets_collected);
           if(poissonCDF_pLayRate > r1 && updateFidelity) {
@@ -518,6 +520,8 @@ void CPFA_controller::Returning() {
 		        Pheromone sharedPheromone(SiteFidelityPosition, TrailToShare, timeInSeconds, LoopFunctions->RateOfPheromoneDecay, ResourceDensity);
                 LoopFunctions->PheromoneList.push_back(sharedPheromone);
                 sharedPheromone.Deactivate(); // make sure this won't get re-added later...
+                argos::LOG <<"TrailToShare size =" << TrailToShare.size() << endl;
+                argos::LOG <<"LoopFunctions->PheromoneList size =" << LoopFunctions->PheromoneList.size() << endl;
           }
           TrailToShare.clear();  
 	    }
@@ -601,7 +605,7 @@ void CPFA_controller::Returning() {
                 startTime = SimulationTick();
                 Stop();
                 //argos::LOG<<controllerID<< " *** give up returning ... "<< endl;
-			}
+			} 
 			
 	    }
 	    
@@ -651,43 +655,46 @@ void CPFA_controller::SetHoldingFood() {
 		    std::vector<argos::CVector2> newFoodList;
 		    std::vector<argos::CColor> newFoodColoringList;
 		    size_t i = 0, j = 0;
-      //if(CPFA_state != RETURNING){
-		         for(i = 0; i < LoopFunctions->FoodList.size(); i++) {
-			            
-		            if((GetPosition() - LoopFunctions->FoodList[i]).SquareLength() < FoodDistanceTolerance ) {
-						// We found food! Calculate the nearby food density.
-        	             isHoldingFood = true;
-	                     CPFA_state = SURVEYING;
-        	             j = i + 1;
-						 searchingTime+=SimulationTick()-startTime;
-						 startTime = SimulationTick();
-						 
-					   //distribute a new food 
-				       /*  argos::CVector2 placementPosition;
-				         placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
-				          
-				         while(LoopFunctions->IsOutOfBounds(placementPosition, 1, 1)){
-				             placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
-				         }
-				         newFoodList.push_back(placementPosition);
-						 newFoodColoringList.push_back(LoopFunctions->FoodColoringList[i]);
-	                    LoopFunctions->increaseNumDistributedFoodByOne(); //the total number of cubes in the arena should be updated. qilu 11/15/2018
-						 //end
-	                     break; */
-			         } else {
-                       //Return this unfound-food position to the list
-                       newFoodList.push_back(LoopFunctions->FoodList[i]);
-                       newFoodColoringList.push_back(LoopFunctions->FoodColoringList[i]);
-                     }
-                 }
-      //}
+		    //argos::LOG<<"LoopFunctions->FoodList size =" <<LoopFunctions->FoodList.size() << endl;
+		    //argos::LOG<<"LoopFunctions->FoodColoringList size =" <<LoopFunctions->FoodColoringList.size() << endl;
+ 
+	         for(i = 0; i < LoopFunctions->FoodList.size(); i++) {
+		            
+	            if((GetPosition() - LoopFunctions->FoodList[i]).SquareLength() < FoodDistanceTolerance ) {
+					// We found food! Calculate the nearby food density.
+					 isHoldingFood = true;
+                     CPFA_state = SURVEYING;
+					 j = i + 1;
+					 searchingTime+=SimulationTick()-startTime;
+					 startTime = SimulationTick();
+					 
+				   //distribute a new food 
+			       /*  argos::CVector2 placementPosition;
+			         placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
+			          
+			         while(LoopFunctions->IsOutOfBounds(placementPosition, 1, 1)){
+			             placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
+			         }
+			         newFoodList.push_back(placementPosition);
+					 newFoodColoringList.push_back(LoopFunctions->FoodColoringList[i]);
+                    LoopFunctions->increaseNumDistributedFoodByOne(); //the total number of cubes in the arena should be updated. qilu 11/15/2018
+					 //end
+					 */
+                     break; 
+		         } else {
+				   //Return this unfound-food position to the list
+				   newFoodList.push_back(LoopFunctions->FoodList[i]);
+				   newFoodColoringList.push_back(LoopFunctions->FoodColoringList[i]);
+				 }
+			 }
+    
       if(j>0){
           for(; j < LoopFunctions->FoodList.size(); j++) {
               newFoodList.push_back(LoopFunctions->FoodList[j]);
               newFoodColoringList.push_back(LoopFunctions->FoodColoringList[j]);
           }
       }
-   
+		//argos::LOG<<"newFoodList size =" << newFoodList.size() << endl;
       // We picked up food. Update the food list minus what we picked up.
       if(IsHoldingFood()) {
          //SetIsHeadingToNest(true);
@@ -695,8 +702,12 @@ void CPFA_controller::SetHoldingFood() {
          LoopFunctions->FoodList = newFoodList;
          LoopFunctions->FoodColoringList = newFoodColoringList; //qilu 09/12/2016
          SetLocalResourceDensity();
+        
       }
+      newFoodList.clear();
+     newFoodColoringList.clear();
 	}
+	 
 		
 	// This shouldn't be checked here ---
 	// Drop off food: We are holding food and have reached the nest.

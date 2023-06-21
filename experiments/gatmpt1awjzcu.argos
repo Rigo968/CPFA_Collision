@@ -1,11 +1,11 @@
-<?xml version="1.0" ?><argos-configuration>
+<argos-configuration>
 
   <!-- ************************* -->
   <!-- * General configuration * -->
   <!-- ************************* -->
   <framework>
     <system threads="0"/>
-    <experiment length="1080" random_seed="0" ticks_per_second="32"/> <!-- the length is in seconds. The number of ticks is ticks_per_second*length-->
+    <experiment length="1080" random_seed="208676660" ticks_per_second="32"/> <!-- the length is in seconds. The number of ticks is ticks_per_second*length-->
   </framework>
 
   <!-- *************** -->
@@ -39,22 +39,9 @@
   <loop_functions label="CPFA_loop_functions" library="build/source/CPFA/libCPFA_loop_functions">
 
     <!-- evolvable parameters -->
-        <CPFA PrintFinalScore="1" 
-        ProbabilityOfReturningToNest="0.0189370369448" 
-        ProbabilityOfSwitchingToSearching="0.765015191742" 
-        RateOfInformedSearchDecay="0.346149969858" 
-        RateOfLayingPheromone="14.4422484524" 
-        RateOfPheromoneDecay="0.337487746208" 
-        RateOfSiteFidelity="1.376331398" 
-        UninformedSearchVariation="3.67372660634"
-         RateOfGiveupInformed="3" 
-         RateOfGiveupReturning="4"/>
+        <CPFA PrintFinalScore="1" ProbabilityOfReturningToNest="0.021535826661458236" ProbabilityOfSwitchingToSearching="0.05485183943890304" RateOfInformedSearchDecay="0.30640137170224785" RateOfLayingPheromone="16.19781930873096" RateOfPheromoneDecay="0.3144930398246123" RateOfSiteFidelity="12.17442996902762" UninformedSearchVariation="18.494505070423674" RateOfGiveupInformed="9.868520864513936" RateOfGiveupReturning="0.18966653315385607"/>
 
-         <settings ClusterWidthX="8" ClusterWidthY="8" DrawDensityRate="4" DrawIDs="1" 
-	 DrawTargetRays="0" DrawTrails="0" FoodDistribution="1" FoodItemCount="128" 
-	 FoodRadius="0.05" MaxSimCounter="1" MaxSimTimeInSeconds="1800" 
-	 NestElevation="0.001" NestPosition="0,0" NestRadius="0.15" NumberOfClusters="4" OutputData="0" 
-	 PowerlawFoodUnitCount="256" VariableFoodPlacement="0"/>
+         <settings ClusterWidthX="8" ClusterWidthY="8" DrawDensityRate="4" DrawIDs="1" DrawTargetRays="0" DrawTrails="0" FoodDistribution="1" FoodItemCount="128" FoodRadius="0.05" MaxSimCounter="1" MaxSimTimeInSeconds="1800" NestElevation="0.001" NestPosition="0,0" NestRadius="0.15" NumberOfClusters="4" OutputData="0" PowerlawFoodUnitCount="256" VariableFoodPlacement="0"/>
 
   </loop_functions>
 
