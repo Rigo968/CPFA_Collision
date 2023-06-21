@@ -119,7 +119,7 @@ class iAntGA(object):
                     self.fitness[i] += self.prev_fitness[self.not_evolved_idx[i]] 
                     logging.info("partial fitness = %d", self.prev_fitness[self.not_evolved_idx[i]])
         # use average fitness as fitness
-        for i in xrange(len(self.fitness)):
+        for i in range(len(self.fitness)):
             logging.info("pop %d total fitness = %g", i, self.fitness[i])
             self.fitness[i] /= self.tests_per_gen
             logging.info("pop %d avg fitness = %g", i, self.fitness[i])
@@ -142,7 +142,7 @@ class iAntGA(object):
         self.check_termination() #qilu 01/21/2016 add this function
         self.population_data=[] # qilu 01/21/2016 reset it
         # Add elites
-        for i in xrange(self.elites):
+        for i in range(self.elites):
             # reverse order from sort
             self.population.append(self.prev_population[i])
             self.not_evolved_idx.append(i) 
@@ -153,7 +153,7 @@ class iAntGA(object):
         num_newOffSpring = self.pop_size - self.elites
         #pdb.set_trace()
         count = 0
-        for i in xrange(num_newOffSpring):
+        for i in range(num_newOffSpring):
             if count == num_newOffSpring: break
             p1c = np.random.choice(len(self.prev_population), 2)
             p2c = np.random.choice(len(self.prev_population), 2)
