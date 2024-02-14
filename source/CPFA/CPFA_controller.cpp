@@ -19,7 +19,9 @@ CPFA_controller::CPFA_controller() :
         travelingTime(0),
         startTime(0),
     m_pcLEDs(NULL),
-        updateFidelity(false)
+    TrailColor(CColor::BLUE),
+        updateFidelity(false),
+        last_time_in_seconds(0)
 {
 }
 
@@ -94,17 +96,24 @@ void CPFA_controller::ControlStep() {
 	*/
 
 	// Add line so we can draw the trail
-
-	CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.00);
-	CVector3 target3d(previous_position.GetX(), previous_position.GetY(), 0.00);
-	CRay3 targetRay(target3d, position3d);
-	myTrail.push_back(targetRay);
-	//since it costs a lot of memeory, I commented it. qilu 06/2023. You can uncomment it if you want to show the trails.
-	//LoopFunctions->TargetRayList.push_back(targetRay);
-	//LoopFunctions->TargetRayColorList.push_back(TrailColor);
-    //argos::LOG<< "TargetRayList size =" << LoopFunctions->TargetRayList.size() <<endl;
-	previous_position = GetPosition();
-
+	curr_time_in_seconds = (argos::Real)(SimulationTick() / SimulationTicksPerSecond()); 
+     
+	if(curr_time_in_seconds - last_time_in_seconds >= 0)
+	{
+		CVector2 position2d(GetPosition().GetX(), GetPosition().GetY());
+		
+		CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.00);
+		CVector3 target3d(previous_position.GetX(), previous_position.GetY(), 0.00);
+		CRay3 targetRay(target3d, position3d);
+		myTrail.push_back(targetRay);
+		LoopFunctions->Trajectory[controllerID].push_back(position2d);
+		//since it costs a lot of memeory, I commented it. qilu 06/2023. You can uncomment it if you want to show the trails.
+		LoopFunctions->TargetRayList.push_back(targetRay);
+		LoopFunctions->TargetRayColorList.push_back(TrailColor);
+		//argos::LOG<< "TargetRayList size =" << LoopFunctions->TargetRayList.size() <<endl;
+		previous_position = GetPosition();
+		last_time_in_seconds = curr_time_in_seconds;
+     }
 	//UpdateTargetRayList();
 	CPFA();
 	Move();
@@ -128,7 +137,7 @@ void CPFA_controller::Reset() {
     updateFidelity = false;
     TrailToShare.clear();
     TrailToFollow.clear();
-    	MyTrail.clear();
+    MyTrail.clear();
 
 	myTrail.clear();
 
@@ -310,16 +319,7 @@ void CPFA_controller::Departing()
      else{ // based on the density of robots, decide to do random search
 		 if(isInformed == true && SimulationTick()% SimulationTicksPerSecond() ==0 ){
 			 //LOG<<"Departing..."<<endl;
-			SetRobotDensity();
-		
-			 argos::Real poissonCDF_pGiveupInformed = GetPoissonCDF(RobotDensity, LoopFunctions->RateOfGiveupInformed);
-			 argos::Real rdm = RNG->Uniform(argos::CRange<argos::Real>(0.0, 1.0));
-			 if(rdm < poissonCDF_pGiveupInformed){ //random search
-				 
-				 SetRandomSearchLocation();
-				 Stop();
-				 //argos::LOG<<controllerID<< " *** give up informed search and switch to random search... "<< endl;
-		     }
+			
 	      }
 	 }
 
@@ -520,8 +520,8 @@ void CPFA_controller::Returning() {
 		        Pheromone sharedPheromone(SiteFidelityPosition, TrailToShare, timeInSeconds, LoopFunctions->RateOfPheromoneDecay, ResourceDensity);
                 LoopFunctions->PheromoneList.push_back(sharedPheromone);
                 sharedPheromone.Deactivate(); // make sure this won't get re-added later...
-                argos::LOG <<"TrailToShare size =" << TrailToShare.size() << endl;
-                argos::LOG <<"LoopFunctions->PheromoneList size =" << LoopFunctions->PheromoneList.size() << endl;
+                //argos::LOG <<"TrailToShare size =" << TrailToShare.size() << endl;
+                //argos::LOG <<"LoopFunctions->PheromoneList size =" << LoopFunctions->PheromoneList.size() << endl;
           }
           TrailToShare.clear();  
 	    }
@@ -581,37 +581,14 @@ void CPFA_controller::Returning() {
 	        SetTarget(turn_vector + GetPosition());
         }
         //detect other robots in its camera view
-        //if(SimulationTick()% (5*SimulationTicksPerSecond())==0 ){
 		if(SimulationTick()% SimulationTicksPerSecond() ==0 ){
-				SetRobotDensity();
-			//LOG<<"Returning..."<<endl;
-			argos::Real poissonCDF_pGiveupReturn = GetPoissonCDF(RobotDensity, LoopFunctions->RateOfGiveupReturning);
-		    argos::Real rdm = RNG->Uniform(argos::CRange<argos::Real>(0.0, 1.0));
-		    
-		    if(rdm < poissonCDF_pGiveupReturn){ //random search
-				if (isHoldingFood) { 
-					LoopFunctions->FoodList.push_back(GetPosition());
-					LoopFunctions->FoodColoringList.push_back(argos::CColor::BLACK);
-				}
 				
-			    SetRandomSearchLocation();
-				isInformed = false;
-				isUsingSiteFidelity = false;
-				
-				isGivingUpSearch = false;
-	            CPFA_state = DEPARTING;   
-                isHoldingFood = false; 
-                travelingTime+=SimulationTick()-startTime;
-                startTime = SimulationTick();
-                Stop();
-                //argos::LOG<<controllerID<< " *** give up returning ... "<< endl;
-			} 
 			
 	    }
 	    
     }		
 }
-
+	
 void CPFA_controller::SetRandomSearchLocation() {
 	argos::Real random_wall = RNG->Uniform(argos::CRange<argos::Real>(0.0, 1.0));
 	argos::Real x = 0.0, y = 0.0;

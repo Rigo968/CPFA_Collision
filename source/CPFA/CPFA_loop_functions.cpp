@@ -32,8 +32,6 @@ CPFA_loop_functions::CPFA_loop_functions() :
 	RateOfSiteFidelity(0.0),
 	RateOfLayingPheromone(0.0),
 	RateOfPheromoneDecay(0.0),
-	RateOfGiveupInformed(0.0),
-	RateOfGiveupReturning(0.0),
 	FoodRadius(0.05),
 	FoodRadiusSquared(0.0025),
 	NestRadius(0.12),
@@ -59,8 +57,6 @@ void CPFA_loop_functions::Init(argos::TConfigurationNode &node) {
 	argos::GetNodeAttribute(CPFA_node, "RateOfSiteFidelity",                RateOfSiteFidelity);
 	argos::GetNodeAttribute(CPFA_node, "RateOfLayingPheromone",             RateOfLayingPheromone);
 	argos::GetNodeAttribute(CPFA_node, "RateOfPheromoneDecay",              RateOfPheromoneDecay);
-	argos::GetNodeAttribute(CPFA_node, "RateOfGiveupInformed",              RateOfGiveupInformed);
-	argos::GetNodeAttribute(CPFA_node, "RateOfGiveupReturning",              RateOfGiveupReturning);
 	
 	argos::GetNodeAttribute(CPFA_node, "PrintFinalScore",                   PrintFinalScore);
 
@@ -158,6 +154,7 @@ void CPFA_loop_functions::Reset() {
 	PheromoneList.clear();
 	FidelityList.clear();
     TargetRayList.clear();
+    Trajectory.clear();
     
     SetFoodDistribution();
     
@@ -210,6 +207,7 @@ void CPFA_loop_functions::PreStep() {
 	FidelityList.clear();
 	PheromoneList.clear();
         TargetRayList.clear();
+        Trajectory.clear();
     }
 }
 
@@ -275,7 +273,6 @@ void CPFA_loop_functions::PostExperiment() {
         
         string header = "./results/"+ type+"_CPFA_r"+num_robots.str()+"_tag"+num_tag.str()+"_"+arena_width.str()+"by"+arena_width.str()+"_quard_arena_" + quardArena.str() +"_";
        
-        //unsigned int ticks_per_second = GetSimulator().GetPhysicsEngine("Default").GetInverseSimulationClockTick();
         unsigned int ticks_per_second = GetSimulator().GetPhysicsEngine("dyn2d").GetInverseSimulationClockTick();//qilu 02/06/2021
        
         /* Real total_travel_time=0;
@@ -320,6 +317,23 @@ void CPFA_loop_functions::PostExperiment() {
         for(size_t i=1; i< ForageList.size(); i++) forageDataOutput<<", "<<ForageList[i];
         forageDataOutput<<"\n";
         forageDataOutput.close();
+        
+        ofstream trajOutput( (header+ "iAntTrajData.txt").c_str(), ios::app);
+        // output to file
+        //if(trajOutput.tellp() == 0) {
+            trajOutput << "trajs\n";//qilu 11/2023
+        //}
+        
+        for(map<string, std::vector<CVector2>>::iterator it= Trajectory.begin(); it!= Trajectory.end(); ++it) {
+			
+			for(size_t j = 0; j < it->second.size(); j++) {
+				trajOutput << it->second[j]<<"; ";
+			}
+			trajOutput << "\n";
+		
+		}
+        
+		trajOutput.close();
         
       }  
 
@@ -585,10 +599,6 @@ unsigned int CPFA_loop_functions::getNumberOfRobots() {
 	return GetSpace().GetEntitiesByType("foot-bot").size();
 }
 
-double CPFA_loop_functions::getRateOfGiveupInformed() {
-	return RateOfGiveupInformed;
-}
-
 double CPFA_loop_functions::getProbabilityOfSwitchingToSearching() {
 	return ProbabilityOfSwitchingToSearching;
 }
@@ -604,10 +614,6 @@ double CPFA_loop_functions::getUninformedSearchVariation() {
 
 double CPFA_loop_functions::getRateOfInformedSearchDecay() {
 	return RateOfInformedSearchDecay;
-}
-
-double CPFA_loop_functions::getRateOfGiveupReturning() {
-	return RateOfGiveupReturning;
 }
 
 double CPFA_loop_functions::getRateOfSiteFidelity() {
@@ -657,8 +663,6 @@ void CPFA_loop_functions::ConfigureFromGenome(Real* g)
 	RateOfSiteFidelity                = g[4];
 	RateOfLayingPheromone             = g[5];
 	RateOfPheromoneDecay              = g[6];
-	RateOfGiveupInformed              = g[7];
-	RateOfGiveupReturning             = g[8];
 }
 
 REGISTER_LOOP_FUNCTIONS(CPFA_loop_functions, "CPFA_loop_functions")

@@ -32,6 +32,7 @@ class CPFA_controller : public BaseController {
 		bool IsHoldingFood();
 		bool IsUsingSiteFidelity();
 		bool IsInTheNest();
+		argos::Real getSimTimeInSeconds();
 
 		Real FoodDistanceTolerance;
 
@@ -41,6 +42,9 @@ class CPFA_controller : public BaseController {
   size_t      GetTravelingTime();//qilu 09/26/2016
   string      GetStatus();//qilu 09/26/2016
   size_t      startTime;//qilu 09/26/2016
+  
+  Real curr_time_in_seconds; 
+    Real last_time_in_seconds; 
         
 
 	private:

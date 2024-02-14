@@ -13,7 +13,8 @@ CPFA_qt_user_functions::CPFA_qt_user_functions() :
 
 void CPFA_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
 	CPFA_controller& c = dynamic_cast<CPFA_controller&>(entity.GetControllableEntity().GetController());
-	std::vector<argos::CVector2> points;
+	//draw the simulated camera view
+	/*std::vector<argos::CVector2> points;
 	points.push_back(CVector2(0,0));
 	points.push_back(CVector2(0.71,0.71));
 	
@@ -29,6 +30,7 @@ void CPFA_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
 	
 	points.push_back(CVector2(0.83, -0.55));
 	points.push_back(CVector2(0.71, -0.71));
+	 */
 
 /* 
  points.push_back(CVector2(1.065,1.065));
@@ -47,9 +49,8 @@ void CPFA_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
 	points.push_back(CVector2(1.065, -1.065));
 
  */
-	DrawPolygon(CVector3(0, 0, 0.002), CQuaternion(), points, argos::CColor::RED, false);
-	//DrawCircle(CVector3(0, 0, 0.002), CQuaternion(), 0.5, argos::CColor::RED, false);
-	points.clear();
+	//DrawPolygon(CVector3(0, 0, 0.002), CQuaternion(), points, argos::CColor::RED, false);
+	//points.clear();
 	
 	if(c.IsHoldingFood()) {
 		DrawCylinder(CVector3(0.0, 0.0, 0.3), CQuaternion(), loopFunctions.FoodRadius, 0.025, CColor::BLACK);
