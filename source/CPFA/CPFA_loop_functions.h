@@ -6,6 +6,15 @@
 #include <argos3/core/simulator/entity/floor_entity.h>
 #include <source/CPFA/CPFA_controller.h>
 #include <argos3/plugins/simulator/entities/cylinder_entity.h>
+#include <cmath>
+#include <unordered_map>
+#include <unordered_set>
+#include <set>
+
+#pragma push_macro("slots")
+#undef slots
+#include "Python.h"
+#pragma pop_macro("slots")
 
 using namespace argos;
 using namespace std;
@@ -55,6 +64,7 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		argos::Real getSimTimeInSeconds();
 
 		std::vector<argos::CColor>   TargetRayColorList;
+
 
 		unsigned int getNumberOfRobots();
         void increaseNumDistributedFoodByOne();
@@ -137,16 +147,20 @@ class CPFA_loop_functions : public argos::CLoopFunctions
                 vector<size_t>		ForageList;
 		argos::CVector2 NestPosition;
 	private:
-
+		bool SetupPythonEnvironment();
+		//vector<int> RunCongestion(std::vector<std::pair<double, double>> dataset);
+		int RunCongestion(const std::vector<argos::CVector2>& robotPosList2);
 		/* private helper functions */
 		void RandomFoodDistribution();
 		void ClusterFoodDistribution();
 		void PowerLawFoodDistribution();
-                bool IsOutOfBounds(argos::CVector2 p, size_t length, size_t width);
+        bool IsOutOfBounds(argos::CVector2 p, size_t length, size_t width);
 		bool IsCollidingWithNest(argos::CVector2 p);
 		bool IsCollidingWithFood(argos::CVector2 p);
 		double score;
 		int PrintFinalScore;
+		PyObject *pyFileName, *pyModule;
+		PyObject *pyCongestion,	*pyCallCongestion,	*pyCongestionArgs;
 };
 
 #endif /* CPFA_LOOP_FUNCTIONS_H */

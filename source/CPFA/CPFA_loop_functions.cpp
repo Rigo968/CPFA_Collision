@@ -84,7 +84,6 @@ void CPFA_loop_functions::Init(argos::TConfigurationNode &node) {
 	argos::GetNodeAttribute(settings_node, "NestElevation", NestElevation);
     argos::GetNodeAttribute(settings_node, "NestPosition", NestPosition);
     FoodRadiusSquared = FoodRadius*FoodRadius;
-
     //Number of distributed foods
     if (FoodDistribution == 1){
         NumDistributedFood = ClusterWidthX*ClusterWidthY*NumberOfClusters;
@@ -131,8 +130,9 @@ void CPFA_loop_functions::Init(argos::TConfigurationNode &node) {
 	
     SetFoodDistribution();
   
- ForageList.clear(); 
- last_time_in_minutes=0;
+	ForageList.clear(); 
+	last_time_in_minutes=0;
+	SetupPythonEnvironment();
  
 }
 
@@ -212,7 +212,30 @@ void CPFA_loop_functions::PreStep() {
 }
 
 void CPFA_loop_functions::PostStep() {
-	// nothing... yet...
+	// get x,y coordinate of each robot
+	argos::CVector2 position;
+	vector<argos::CVector2> robotPosList2;
+	argos::CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
+	
+	robotPosList.clear();
+	robotPosList2.clear();
+	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
+	  argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
+	  BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
+	  CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
+	  position = c2.GetPosition();
+	  //robotPosList[c2.GetId()] = position;
+	  robotPosList2.push_back(position);
+	}
+	
+	// for(map<string, CVector2>::iterator it= robotPosList.begin(); it!=robotPosList.end(); ++it) {
+	// 	argos::LOG << "pos["<< it->first <<"]="<< it->second << endl;
+	// }
+
+
+
+	// run congestion algorithm
+	RunCongestion(robotPosList2);
 }
 
 bool CPFA_loop_functions::IsExperimentFinished() {
@@ -245,8 +268,8 @@ bool CPFA_loop_functions::IsExperimentFinished() {
 
 void CPFA_loop_functions::PostExperiment() {
 	  
-     printf("%f, %f, %lu\n", score, getSimTimeInSeconds(), RandomSeed);
-       
+    //  printf("%f, %f, %lu\n", score, getSimTimeInSeconds(), RandomSeed);
+    //  printf("%f\n", score);  
                   
     if (PrintFinalScore == 1) {
         string type="";
@@ -301,7 +324,7 @@ void CPFA_loop_functions::PostExperiment() {
         //travelSearchTimeDataOutput<< total_travel_time/ticks_per_second<<", "<<total_search_time/ticks_per_second<<endl;
         //travelSearchTimeDataOutput.close();   
              
-        ofstream dataOutput( (header+ "iAntTagData.txt").c_str(), ios::app);
+        ofstream dataOutput( (header+ "iAntTagDa.txt").c_str(), ios::app);
         // output to file
         if(dataOutput.tellp() == 0) {
             dataOutput << "tags_collected, collisions_in_seconds, time_in_minutes, random_seed\n";//qilu 08/18
@@ -311,7 +334,12 @@ void CPFA_loop_functions::PostExperiment() {
         //dataOutput << Score() << ", "<<(CollisionTime-16*Score())/(2*ticks_per_second)<< ", "<< curr_time_in_minutes <<", "<<RandomSeed<<endl;
         dataOutput << Score() << ", "<<CollisionTime/(2*ticks_per_second)<< ", "<< curr_time_in_minutes <<", "<<RandomSeed<<endl;
         dataOutput.close();
-    
+
+		/*
+        ofstream densityOutput( ("./results/densities.txt"), ios::app);
+        densityOutput << Score() << ", "<<CollisionTime/(2*ticks_per_second)<< ", "<< curr_time_in_minutes <<", "<<RandomSeed<<endl;
+        densityOutput.close();
+		*/
         ofstream forageDataOutput((header+"ForageData.txt").c_str(), ios::app);
         if(ForageList.size()!=0) forageDataOutput<<"Forage: "<< ForageList[0];
         for(size_t i=1; i< ForageList.size(); i++) forageDataOutput<<", "<<ForageList[i];
@@ -336,6 +364,19 @@ void CPFA_loop_functions::PostExperiment() {
 		trajOutput.close();
         
       }  
+
+	// get food collected for each robot at each timestep
+	ofstream foodOutput( "./results/foodData.txt", ios::app);
+	if(foodOutput.tellp() == 0) {
+	   foodOutput << "food_collected\n";
+	   //foodOutput << CollectedFoodList.size() << endl;
+	}
+	for(size_t i = 0; i < CollectedFoodList.size(); i++) {
+	   foodOutput << CollectedFoodList[i] << ", ";
+	}
+	foodOutput << endl;
+	foodOutput.close();
+
 
 }
 
@@ -663,6 +704,124 @@ void CPFA_loop_functions::ConfigureFromGenome(Real* g)
 	RateOfSiteFidelity                = g[4];
 	RateOfLayingPheromone             = g[5];
 	RateOfPheromoneDecay              = g[6];
+}
+
+bool CPFA_loop_functions::SetupPythonEnvironment(){
+
+	Py_Initialize();
+	if(Py_IsInitialized()){
+		LOG << "Python version: " << Py_GetVersion() << endl;
+	} else {
+		LOGERR << "ERROR: Python failed to initialize." << endl;
+		return 0;	
+	}
+
+	
+	PyObject *sys = PyImport_ImportModule("sys");
+	PyObject *path = PyObject_GetAttrString(sys, "path");
+	PyList_Append(path, PyUnicode_FromString("/home/arturo/src/argos3/build_simulator/Collision_Free_CPFA/source/CPFA"));
+	PyObject *repr = PyObject_Repr(path);
+	const char* s = PyUnicode_AsUTF8(repr);
+	printf("Python path: ");
+	Py_DECREF(repr);
+	Py_DECREF(path);
+	Py_DECREF(sys);
+
+	// Load the module
+	pyFileName = PyUnicode_FromString("cpfa_test");
+	if (pyFileName == NULL) {
+		LOG << "Error converting module name to PyUnicode" << std::endl;
+		Py_Finalize();
+		return 0;
+	}
+
+	pyModule = PyImport_Import(pyFileName);
+	Py_DECREF(pyFileName);
+
+	if (pyModule == NULL) {
+		LOG << "Failed to load Python module" << std::endl;
+		Py_Finalize();
+		return 0;
+	}
+
+	// Load the function from the module
+	pyCongestion = PyObject_GetAttrString(pyModule, "test_func");
+	Py_DECREF(pyModule);
+
+	if (pyCongestion == NULL || !PyCallable_Check(pyCongestion)) {
+		if (PyErr_Occurred()) {
+			PyErr_Print();
+		}
+		LOG << "Failed to load Python function" << std::endl;
+		Py_XDECREF(pyCongestion);
+		Py_Finalize();
+		return 0;
+	}
+	// PyObject *result = PyObject_CallObject(pyCongestion, NULL);
+    // PyObject* str = PyObject_Repr(result);
+    // const char* c_str = PyUnicode_AsUTF8(str);
+    // printf("Python function returned: %s\n", c_str);
+    // Py_XDECREF(str);
+	return 1;
+
+}
+
+
+int CPFA_loop_functions::RunCongestion(const std::vector<argos::CVector2>& robotPosList2) {
+    // if (pyCongestion == NULL) {
+    //     LOGERR << "Python function not loaded" << std::endl;
+    //     Py_XDECREF(pyCongestion);
+    //     Py_Finalize();
+    //     return {};
+    // }
+
+    // Create a Python list from robotPosList2
+    PyObject *pyData = PyList_New(robotPosList2.size());
+    for (size_t i = 0; i < robotPosList2.size(); i++) {
+        PyObject *pyPair = PyTuple_New(2);
+        PyTuple_SetItem(pyPair, 0, PyFloat_FromDouble(robotPosList2[i].GetX()));
+        PyTuple_SetItem(pyPair, 1, PyFloat_FromDouble(robotPosList2[i].GetY()));
+        PyList_SetItem(pyData, i, pyPair);
+    }
+
+    // Call the Python function
+    // PyObject *pyResult = PyObject_CallFunctionObjArgs(pyCongestion, pyData, NULL);
+	PyObject *pyResult = PyObject_CallObject(pyCongestion, NULL);
+    Py_DECREF(pyData);
+
+    // if (pyResult == NULL) {
+    //     LOGERR << "Failed to call Python function" << std::endl;
+    //     PyErr_Print();
+    //     Py_XDECREF(pyResult);
+    //     Py_XDECREF(pyCongestion);
+    //     Py_Finalize();
+    //     return {};
+    // }
+
+    // if (!PyList_Check(pyResult)) {
+    //     LOGERR << "Python function did not return a list" << std::endl;
+    //     Py_XDECREF(pyResult);
+    //     Py_XDECREF(pyCongestion);
+    //     Py_Finalize();
+    //     return {};
+    // }
+
+    // // Convert the Python list to a std::vector<int>
+    // vector<int> result;
+    // for (size_t i = 0; i < PyList_Size(pyResult); i++) {
+    //     PyObject *item = PyList_GetItem(pyResult, i);
+    //     if (!PyLong_Check(item)) {
+    //         LOGERR << "Python list item is not an integer" << std::endl;
+    //         Py_XDECREF(pyResult);
+    //         Py_XDECREF(pyCongestion);
+    //         Py_Finalize();
+    //         return {};
+    //     }
+    //     result.push_back(PyLong_AsLong(item));
+    // }
+
+    // Py_XDECREF(pyResult);
+    return 1;
 }
 
 REGISTER_LOOP_FUNCTIONS(CPFA_loop_functions, "CPFA_loop_functions")

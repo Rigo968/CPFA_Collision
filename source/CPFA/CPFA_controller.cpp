@@ -1,5 +1,11 @@
 #include "CPFA_controller.h"
 #include <unistd.h>
+#include <fstream>
+
+//#include <argos3/core/utility/logging/argos_log.h>
+
+
+
 
 CPFA_controller::CPFA_controller() :
 	RNG(argos::CRandom::CreateRNG("argos")),
@@ -759,12 +765,17 @@ void CPFA_controller::SetRobotDensity() {
 		      RobotDensity++;
 		      //argos::LOG<<"*** in the range ***" <<endl;
 		    }
-		    //argos::LOG << controllerID<< " detects " << RobotDensity<< " robots."<<endl;
+		    argos::LOG << controllerID<< " detects " << RobotDensity<< " robots."<<endl;			
+			/*
+			ofstream density_file;
+			density_file.open("./results/densities.txt", ios::app); 
+			density_file << controllerID << " detects " << RobotDensity << " robots.\n";
+			density_file.close();
+			*/
 		  }
-		
 	  }
 	}
-	
+	//LoopFunctions->robotDensities[controllerID] = RobotDensity;
 }
 
 /*****
