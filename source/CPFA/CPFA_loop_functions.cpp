@@ -232,10 +232,19 @@ void CPFA_loop_functions::PostStep() {
 	// 	argos::LOG << "pos["<< it->first <<"]="<< it->second << endl;
 	// }
 
+	// for(size_t i = 0; i < robotPosList2.size(); i++) {
+	// 	argos::LOG << "pos["<< i <<"]="<< robotPosList2[i] << endl;
+	// }
 
-
+	//argos::LOG << "Hello from PostStep" << std::endl; 	
 	// run congestion algorithm
-	RunCongestion(robotPosList2);
+    vector<int> congestionResults = RunCongestion(robotPosList2);
+	// argos::LOG << congestionResults.size() << " robots in the arena" << std::endl;
+    // // Print the results
+    for (size_t i = 0; i < congestionResults.size(); ++i) {
+        argos::LOG << "Robot " << congestionResults[i] << " is congested" << std::endl;
+    }
+	argos::LOG << std::endl;
 }
 
 bool CPFA_loop_functions::IsExperimentFinished() {
@@ -728,7 +737,7 @@ bool CPFA_loop_functions::SetupPythonEnvironment(){
 	Py_DECREF(sys);
 
 	// Load the module
-	pyFileName = PyUnicode_FromString("cpfa_test");
+	pyFileName = PyUnicode_FromString("congestion");
 	if (pyFileName == NULL) {
 		LOG << "Error converting module name to PyUnicode" << std::endl;
 		Py_Finalize();
@@ -745,7 +754,7 @@ bool CPFA_loop_functions::SetupPythonEnvironment(){
 	}
 
 	// Load the function from the module
-	pyCongestion = PyObject_GetAttrString(pyModule, "test_func");
+	pyCongestion = PyObject_GetAttrString(pyModule, "run_congestion_logic");
 	Py_DECREF(pyModule);
 
 	if (pyCongestion == NULL || !PyCallable_Check(pyCongestion)) {
@@ -767,7 +776,7 @@ bool CPFA_loop_functions::SetupPythonEnvironment(){
 }
 
 
-int CPFA_loop_functions::RunCongestion(const std::vector<argos::CVector2>& robotPosList2) {
+vector<int> CPFA_loop_functions::RunCongestion(const std::vector<argos::CVector2>& robotPosList2) {
     // if (pyCongestion == NULL) {
     //     LOGERR << "Python function not loaded" << std::endl;
     //     Py_XDECREF(pyCongestion);
@@ -784,10 +793,10 @@ int CPFA_loop_functions::RunCongestion(const std::vector<argos::CVector2>& robot
         PyList_SetItem(pyData, i, pyPair);
     }
 
-    // Call the Python function
-    // PyObject *pyResult = PyObject_CallFunctionObjArgs(pyCongestion, pyData, NULL);
-	PyObject *pyResult = PyObject_CallObject(pyCongestion, NULL);
-    Py_DECREF(pyData);
+    PyObject *args = PyTuple_New(1);
+    PyTuple_SetItem(args, 0, pyData);
+    PyObject *pyResult = PyObject_CallObject(pyCongestion, args);
+    Py_DECREF(args);
 
     // if (pyResult == NULL) {
     //     LOGERR << "Failed to call Python function" << std::endl;
@@ -806,8 +815,7 @@ int CPFA_loop_functions::RunCongestion(const std::vector<argos::CVector2>& robot
     //     return {};
     // }
 
-    // // Convert the Python list to a std::vector<int>
-    // vector<int> result;
+    vector<int> result;
     // for (size_t i = 0; i < PyList_Size(pyResult); i++) {
     //     PyObject *item = PyList_GetItem(pyResult, i);
     //     if (!PyLong_Check(item)) {
@@ -820,8 +828,19 @@ int CPFA_loop_functions::RunCongestion(const std::vector<argos::CVector2>& robot
     //     result.push_back(PyLong_AsLong(item));
     // }
 
-    // Py_XDECREF(pyResult);
-    return 1;
+    if (PyList_Check(pyResult)) {
+        Py_ssize_t listSize = PyList_Size(pyResult);
+		//LOGERR << "Result is valid" << std::endl;
+        for (Py_ssize_t i = 0; i < listSize; ++i) {
+            PyObject* pLabel = PyList_GetItem(pyResult, i);
+            int label = PyLong_AsLong(pLabel);
+            result.push_back(label);
+        }
+    }
+
+    Py_DECREF(pyResult);
+    //Py_XDECREF(pyResult);
+    return result;
 }
 
 REGISTER_LOOP_FUNCTIONS(CPFA_loop_functions, "CPFA_loop_functions")

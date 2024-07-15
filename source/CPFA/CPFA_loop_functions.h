@@ -148,8 +148,8 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		argos::CVector2 NestPosition;
 	private:
 		bool SetupPythonEnvironment();
-		//vector<int> RunCongestion(std::vector<std::pair<double, double>> dataset);
-		int RunCongestion(const std::vector<argos::CVector2>& robotPosList2);
+		// vector<int> RunCongestion(std::vector<std::pair<double, double>> dataset);
+		vector<int> RunCongestion(const std::vector<argos::CVector2>& robotPosList2);
 		/* private helper functions */
 		void RandomFoodDistribution();
 		void ClusterFoodDistribution();
