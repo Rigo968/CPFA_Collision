@@ -42,14 +42,15 @@ class CPFA_controller : public BaseController {
   size_t      GetTravelingTime();//qilu 09/26/2016
   string      GetStatus();//qilu 09/26/2016
   size_t      startTime;//qilu 09/26/2016
-  
+  void 		 setStatus(string status);
+
   Real curr_time_in_seconds; 
     Real last_time_in_seconds; 
         
 
 	private:
   string 			controllerID;//qilu 07/26/2016
-
+		CCI_DifferentialSteeringActuator* m_pcWheels; //defining wheels
 		CPFA_loop_functions* LoopFunctions;
 		argos::CRandom::CRNG* RNG;
 
@@ -84,7 +85,8 @@ class CPFA_controller : public BaseController {
 			DEPARTING = 0,
 			SEARCHING = 1,
 			RETURNING = 2,
-			SURVEYING = 3
+			SURVEYING = 3,
+			CONGESTED = 4
 		} CPFA_state;
 
 		/* iAnt CPFA state functions */
@@ -93,6 +95,7 @@ class CPFA_controller : public BaseController {
 		void Searching();
 		void Returning();
 		void Surveying();
+		void Congested();
 
 		/* CPFA helper functions */
 		void SetRandomSearchLocation();

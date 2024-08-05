@@ -19,6 +19,7 @@ CPFA_controller::CPFA_controller() :
 	CPFA_state(DEPARTING),
 	LoopFunctions(NULL),
 	survey_count(0),
+	m_pcWheels(NULL),
 	isUsingPheromone(0),
     SiteFidelityPosition(1000, 1000), 
         searchingTime(0),
@@ -48,7 +49,7 @@ void CPFA_controller::Init(argos::TConfigurationNode &node) {
 	argos::GetNodeAttribute(settings, "ResultsDirectoryPath",      results_path);
 	argos::GetNodeAttribute(settings, "DestinationNoiseStdev",      DestinationNoiseStdev);
 	argos::GetNodeAttribute(settings, "PositionNoiseStdev",      PositionNoiseStdev);
-
+	m_pcWheels = GetActuator<CCI_DifferentialSteeringActuator>("differential_steering"); // adding wheels
 	argos::CVector2 p(GetPosition());
 	SetStartPosition(argos::CVector3(p.GetX(), p.GetY(), 0.0));
 	
@@ -171,7 +172,7 @@ void CPFA_controller::CPFA() {
 			Departing();
 			break;
 		// after departing(), once conditions are met, begin searching()
-		case SEARCHING:
+		case SEARCHING: 
 			//argos::LOG << "SEARCHING" << std::endl;
 			//SetIsHeadingToNest(false);
 			if((SimulationTick() % (SimulationTicksPerSecond() / 2)) == 0) {
@@ -188,6 +189,11 @@ void CPFA_controller::CPFA() {
 			//argos::LOG << "SURVEYING" << std::endl;
 			//SetIsHeadingToNest(false);
 			Surveying();
+			break;
+		case CONGESTED:
+			//argos::LOG << "CONGESTED" << std::endl;
+			//SetIsHeadingToNest(false);
+			Congested();
 			break;
 	}
 }
@@ -488,6 +494,13 @@ void CPFA_controller::Surveying() {
 	}
 }
 
+// CONGESTED: the robot will stop and stay in place
+void CPFA_controller::Congested() {
+ //LOG<<"Congested..."<<endl;
+	Stop();
+}
+
+
 
 /*****
  * RETURNING: Stay in this state until the robot has returned to the nest.
@@ -497,7 +510,7 @@ void CPFA_controller::Surveying() {
 void CPFA_controller::Returning() {
  //LOG<<"Returning..."<<endl;
 	//SetHoldingFood();
-
+	m_pcWheels->SetLinearVelocity(0.08f, 0.08f); //setting velocity when returning to nest
 	// Are we there yet? (To the nest, that is.)
 	if(IsInTheNest()) {
 		// Based on a Poisson CDF, the robot may or may not create a pheromone
@@ -967,11 +980,20 @@ string CPFA_controller::GetStatus(){//qilu 10/22
     else if (CPFA_state ==SEARCHING)return "SEARCHING";
     else if (CPFA_state == RETURNING)return "RETURNING";
     else if (CPFA_state == SURVEYING) return "SURVEYING";
+	else if (CPFA_state == CONGESTED) return "CONGESTED";
     //else if (MPFA_state == INACTIVE) return "INACTIVE";
     else return "SHUTDOWN";
     
 }
 
+void CPFA_controller::setStatus(string status){
+	if(status == "DEPARTING") CPFA_state = DEPARTING;
+	else if(status == "SEARCHING") CPFA_state = SEARCHING;
+	else if(status == "RETURNING") CPFA_state = RETURNING;
+	else if(status == "SURVEYING") CPFA_state = SURVEYING;
+	else if(status == "CONGESTED") CPFA_state = CONGESTED;
+	//else if(status == "INACTIVE") MPFA_state = INACTIVE;
+}
 
 /*****
  * Return the Poisson cumulative probability at a given k and lambda.

@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
+#include <algorithm> 
 
 #pragma push_macro("slots")
 #undef slots
@@ -65,7 +66,21 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 
 		std::vector<argos::CColor>   TargetRayColorList;
 
+		struct RobotState {
+			CVector2 position; // Current position (x, y)
+			//make velocity  8 cm/s
+			//CVector2 velocity; // Current velocity (vx, vy)
 
+			argos::CRadians heading;      // Current heading (theta)
+		};
+		struct CollisionInfo {
+			size_t robot1;    // Index of the first robot
+			size_t robot2;    // Index of the second robot
+			size_t time_step; // Time step at which the collision is predicted
+
+			CollisionInfo(size_t r1, size_t r2, size_t ts)
+				: robot1(r1), robot2(r2), time_step(ts) {}
+		};
 		unsigned int getNumberOfRobots();
         void increaseNumDistributedFoodByOne();
 		double getProbabilityOfSwitchingToSearching();
@@ -148,12 +163,25 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		argos::CVector2 NestPosition;
 	private:
 		bool SetupPythonEnvironment();
+		
 		// vector<int> RunCongestion(std::vector<std::pair<double, double>> dataset);
 		vector<int> RunCongestion(const std::vector<argos::CVector2>& robotPosList2);
 		/* private helper functions */
 		void RandomFoodDistribution();
 		void ClusterFoodDistribution();
 		void PowerLawFoodDistribution();
+
+		// Add member variables for state information, communication, etc.
+		// Function to predict trajectory
+		//void PredictTrajectory();
+		void PredictTrajectory(std::vector<CVector2>& predicted_positions, const RobotState& state, Real time_horizon, Real time_step);
+		// Function to detect potential collisions
+		//void DetectCollisions();
+    	void DetectCollisions(const std::vector<std::vector<CVector2>>& predicted_trajectories, std::vector<CollisionInfo>& collisions);
+		// Function to adjust path to avoid collisions
+		//void AdjustPath();
+    	void AdjustPath(std::vector<std::vector<CVector2>>& predicted_trajectories, const std::vector<CollisionInfo>& collisions);
+
         bool IsOutOfBounds(argos::CVector2 p, size_t length, size_t width);
 		bool IsCollidingWithNest(argos::CVector2 p);
 		bool IsCollidingWithFood(argos::CVector2 p);
@@ -161,6 +189,9 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		int PrintFinalScore;
 		PyObject *pyFileName, *pyModule;
 		PyObject *pyCongestion,	*pyCallCongestion,	*pyCongestionArgs;
+
+		std::vector<std::vector<CVector2>> m_predicted_trajectories; // Vector to store predicted trajectories for all robots
+    	Real m_collision_threshold; // Distance threshold for detecting collisions
 };
 
 #endif /* CPFA_LOOP_FUNCTIONS_H */

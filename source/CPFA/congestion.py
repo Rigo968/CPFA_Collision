@@ -93,26 +93,26 @@ def run_congestion_logic(all_trajectories):
     # # Calculate the average distance between each robot and 
     # # all other robots at each timestep in their trajectories. 
     # # I can later define what certain distance will give the robot a point
-    # num_robots = 16
-    # distances_from_robots = [[] for _ in range(num_robots)]
+    num_robots = 16
+    distances_from_robots = [[] for _ in range(num_robots)]
 
-    # for r in range(num_robots):
-    #     for i in range(len(trajectories[0])):
-    #         distances = []
-    #         for j in range(num_robots):
-    #             if j != r:
-    #                 distance = euclidean_distance(trajectories[r][i, 0], trajectories[r][i, 1], trajectories[j][i, 0], trajectories[j][i, 1])
-    #                 distances.append(distance)
-    #         avg_distance = np.mean(distances)
-    #         distances_from_robots[r].append(avg_distance)
+    for r in range(num_robots):
+        for i in range(len(trajectories[0])):
+            distances = []
+            for j in range(num_robots):
+                if j != r:
+                    distance = euclidean_distance(trajectories[r][i, 0], trajectories[r][i, 1], trajectories[j][i, 0], trajectories[j][i, 1])
+                    distances.append(distance)
+            avg_distance = np.mean(distances)
+            distances_from_robots[r].append(avg_distance)
 
-    # distances_from_robots = np.array(distances_from_robots)
-    # distances_from_robots = distances_from_robots.T
+    distances_from_robots = np.array(distances_from_robots)
+    distances_from_robots = distances_from_robots.T
 
-    # median_distances_from_robots = 2.127028932039728
+    median_distances_from_robots = 0
 
-    # distances_more_than_avg = np.where(distances_from_robots < median_distances_from_robots, 1, 0)
-
+    distances_more_than_avg = np.where(distances_from_robots > median_distances_from_robots, 0, 1)
+    #print(distances_more_than_avg)
     # # If robot stays at the same position, it will receive one point
     # # def track_staying_points(trajectories):
     # #     num_robots = trajectories.shape[0]
