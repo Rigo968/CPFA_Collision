@@ -274,41 +274,34 @@ void CPFA_loop_functions::PostStep() {
 	// 	c2.setStatus(status);
 	// }	
 	// get status the status of each robot and store it in a list
-	size_t index = 0;
-	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++, index++) {
-		argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
-		BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
-		CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
+
+	// size_t index = 0;
+	// for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++, index++) {
+	// 	argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
+	// 	BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
+	// 	CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
 		
-		// if the index is in congestionResults, switch status
-		if (c2.GetStatus() == "SEARCHING" && std::count(congestionResults.begin(), congestionResults.end(), index) > 0) {
-			c2.setStatus("CONGESTED");
-		}
+	// 	// if the index is in congestionResults, switch status
+	// 	if (c2.GetStatus() == "SEARCHING" && std::count(congestionResults.begin(), congestionResults.end(), index) > 0) {
+	// 		c2.setStatus("CONGESTED");
+	// 	}
 
-		//argos::LOG << "Robot: " << c2.GetId() << ", Status: " << c2.GetStatus() << std::endl;
-		// if(c2.GetStatus() == "CONGESTED" && std::find(congestionResults.begin(), congestionResults.end(), index) == congestionResults.end()) {
-		// 	c2.setStatus("SEARCHING");
-		// }
+	// 	//argos::LOG << "Robot: " << c2.GetId() << ", Status: " << c2.GetStatus() << std::endl;
+	// 	// if(c2.GetStatus() == "CONGESTED" && std::find(congestionResults.begin(), congestionResults.end(), index) == congestionResults.end()) {
+	// 	// 	c2.setStatus("SEARCHING");
+	// 	// }
 
-		if(c2.GetStatus() == "CONGESTED" && std::count(congestionResults.begin(), congestionResults.end(), index) == 0) {
-			c2.setStatus("SEARCHING");
-		}
-	}
+	// 	if(c2.GetStatus() == "CONGESTED" && std::count(congestionResults.begin(), congestionResults.end(), index) == 0) {
+	// 		c2.setStatus("SEARCHING");
+	// 	}
+	// }
 
 
 	//get velocity of each robot
 	vector<CVector2> robotVelocities;
 
 
-
-	// log the status of each robot
-	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
-		argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
-		BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
-		CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
-		//argos::LOG << c2.GetId() << " " << c2.GetStatus() << std::endl;
-
-	}
+	size_t index1 = 0;
 
 
     // Add member variables for state information, communication, etc.
@@ -334,9 +327,10 @@ void CPFA_loop_functions::PostStep() {
 
 			// Vector to store predicted positions
 			std::vector<CVector2> predicted_positions;
-
-			// Predict trajectory
 			PredictTrajectory(predicted_positions, current_state, time_horizon, time_step);
+			//std::unordered_map<size_t, CVector2> predicted_positions;
+			// Predict trajectory
+			//PredictTrajectory(c2.GetId(), predicted_positions, current_state, time_horizon, time_step);
 			LOG << "Current position: " << current_state.position << " For Robot: " << c2.GetId() << std::endl;
 
 			std::vector<CVector2> predicted_positions_odd;
@@ -354,12 +348,34 @@ void CPFA_loop_functions::PostStep() {
 		}
 	}
 
-	std::vector<CollisionInfo> collisions;
+	std::vector<size_t> collisions;
 	DetectCollisions(m_predicted_trajectories, collisions);
 	//log detected collisions
-	for (size_t i = 0; i < collisions.size(); i++) {
-		LOG << "Collision detected between Robot: " << collisions[i].robot1 << " and Robot: " << collisions[i].robot2 << std::endl;
+	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++, index1++) {
+		argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
+		BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
+		CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
+		// if (std::find(collisions.begin(), collisions.end(), index1) != collisions.end()) {
+		// 	c2.setStatus("CONGESTED");
+		// }
+		// if(c2.GetStatus() == "CONGESTED" && std::count(collisions.begin(), collisions.end(), index1) == 0) {
+		// 	c2.setStatus("RETURNING");
+		// }
+		if (c2.GetStatus() == "RETURNING" && std::count(collisions.begin(), collisions.end(), index1) > 0) {
+			c2.setStatus("CONGESTED");
+		}
+		//print status of each robot
+		//argos::LOG << "Robot: " << c2.GetId() << ", Status: " << c2.GetStatus() << std::endl;
+
+		if(c2.GetStatus() == "CONGESTED" && std::count(collisions.begin(), collisions.end(), index1) == 0) {
+			c2.setStatus("RETURNING");
+		}		
 	}
+
+
+	// for (size_t i = 0; i < collisions.size(); i++) {
+	// 	LOG << "Collision detected between Robot: " << collisions[i].robot1 << " and Robot: " << collisions[i].robot2 << std::endl;
+	// }
 	// // Adjust paths based on detected collisions
 	// AdjustPath(m_predicted_trajectories, collisions);
 
@@ -980,50 +996,82 @@ void CPFA_loop_functions::PredictTrajectory(std::vector<CVector2>& predicted_pos
     }
 }
 
-void CPFA_loop_functions::DetectCollisions(const std::vector<std::vector<CVector2>>& predicted_trajectories, std::vector<CollisionInfo>& collisions) {
-    // predicted_trajectories contains the predicted positions of all robots(10 for each)
-	for (size_t i = 0; i < predicted_trajectories.size(); ++i) {
-		for (size_t j = i + 1; j < predicted_trajectories.size(); ++j) {
-			const std::vector<CVector2>& trajectory1 = predicted_trajectories[i];
-			const std::vector<CVector2>& trajectory2 = predicted_trajectories[j];
+// void CPFA_loop_functions::PredictTrajectory(std::unordered_map<size_t, CVector2>& predicted_positions, const RobotState& state, Real time_horizon, Real time_step, size_t robot_id) {
+//     predicted_positions.clear();
 
-			// Check if the two trajectories intersect
-			for (size_t t = 0; t < trajectory1.size(); ++t) {
-				if (t < trajectory2.size()) {
-					if ((trajectory1[t] - trajectory2[t]).SquareLength() < 0.1) {
-						collisions.push_back(CollisionInfo(i, j, t));
-						break;
-					}
-				}
-			}
-		}
-	}
+//     CVector2 current_position = state.position;
+//     argos::CRadians current_heading = state.heading;
+//     Real velocity = 0.08f;
+//     Real heading_angle = current_heading.UnsignedNormalize().GetValue();
+//     for (Real t = 0; t <= time_horizon; t += time_step) {
+//         CVector2 displacement = CVector2(velocity * std::cos(heading_angle) * time_step,
+//                                          velocity * std::sin(heading_angle) * time_step);
 
-	
+//         CVector2 new_position = current_position + displacement;
+//         // Update current state for the next iteration
+//         predicted_positions[robot_id] = new_position;
+//         current_position = new_position;
+//     }
+// }
 
+// void CPFA_loop_functions::DetectCollisions(const std::vector<std::vector<CVector2>>& predicted_trajectories, std::vector<size_t>& collisions) {
+//     // predicted_trajectories contains the predicted positions of all robots(10 for each)
+// 	for (size_t i = 0; i < predicted_trajectories.size(); ++i) {
+// 		for (size_t j = i + 1; j < predicted_trajectories.size(); ++j) {
+// 			const std::vector<CVector2>& trajectory1 = predicted_trajectories[i];
+// 			const std::vector<CVector2>& trajectory2 = predicted_trajectories[j];
+
+// 			// Check if the two trajectories intersect
+// 			for (size_t t = 0; t < trajectory1.size(); ++t) {
+// 				if (t < trajectory2.size()) {
+// 					if ((trajectory1[t] - trajectory2[t]).SquareLength() < 0.1) {
+// 						//collisions.push_back(CollisionInfo(i, j, t));
+// 						collisions.push_back(i);
+// 						break;
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+
+void CPFA_loop_functions::DetectCollisions(const std::vector<std::vector<CVector2>>& predicted_trajectories, std::vector<size_t>& collisions) {
+    for (size_t i = 0; i < predicted_trajectories.size(); ++i) {
+        bool collision_found = false;
+
+        for (size_t j = i + 1; j < predicted_trajectories.size() && !collision_found; ++j) {
+            const std::vector<CVector2>& trajectory1 = predicted_trajectories[i];
+            const std::vector<CVector2>& trajectory2 = predicted_trajectories[j];
+
+            for (size_t t = 0; t < trajectory1.size(); ++t) {
+                if (t < trajectory2.size()) {
+                    if ((trajectory1[t] - trajectory2[t]).SquareLength() < 0.1) {
+                        collisions.push_back(i);
+                        collision_found = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
-// void CPPCAController::AdjustPath(std::vector<std::vector<CVector2>>& predicted_trajectories, const std::vector<CollisionInfo>& collisions) {
-//     // Adjust paths based on detected collisions
-//     for (const CollisionInfo& collision : collisions) {
-//         // Retrieve trajectories for the two robots involved in the collision
-//         std::vector<CVector2>& trajectory1 = predicted_trajectories[collision.robot1];
-//         std::vector<CVector2>& trajectory2 = predicted_trajectories[collision.robot2];
+// void CPFA_loop_functions::AdjustPath(std::vector<std::vector<CVector2>>& predicted_trajectories, const std::vector<CollisionInfo>& collisions) {
+// 	for (size_t i = 0; i < collisions.size(); ++i) {
+// 		size_t robot1 = collisions[i].robot1;
+// 		size_t robot2 = collisions[i].robot2;
+// 		size_t collision_time = collisions[i].collision_time;
 
-//         // Get the collision time step
-//         size_t t = collision.time_step;
+// 		// Add a delay to the trajectory of robot1
+// 		for (size_t t = collision_time; t < predicted_trajectories[robot1].size(); ++t) {
+// 			predicted_trajectories[robot1][t] = predicted_trajectories[robot1][collision_time];
+// 		}
 
-//         // Introduce a waypoint for one of the robots to avoid the collision
-//         // Example: Shift one robot's path slightly to the side
-//         if (t < trajectory1.size() && t < trajectory2.size()) {
-//             CVector2 adjustment_vector = (trajectory2[t] - trajectory1[t]).Perpendicularize().Normalize() * m_collision_threshold;
-//             trajectory1[t] += adjustment_vector;
-//             // Recalculate future positions based on the new adjusted position
-//             for (size_t future_t = t + 1; future_t < trajectory1.size(); ++future_t) {
-//                 trajectory1[future_t] += adjustment_vector;
-//             }
-//         }
-//     }
+// 		// Add a delay to the trajectory of robot2
+// 		for (size_t t = collision_time; t < predicted_trajectories[robot2].size(); ++t) {
+// 			predicted_trajectories[robot2][t] = predicted_trajectories[robot2][collision_time];
+// 		}
+// 	}
 // }
 
 REGISTER_LOOP_FUNCTIONS(CPFA_loop_functions, "CPFA_loop_functions")

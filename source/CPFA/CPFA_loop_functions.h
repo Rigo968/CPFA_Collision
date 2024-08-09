@@ -178,6 +178,7 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		// Function to detect potential collisions
 		//void DetectCollisions();
     	void DetectCollisions(const std::vector<std::vector<CVector2>>& predicted_trajectories, std::vector<CollisionInfo>& collisions);
+		void DetectCollisions(const std::vector<std::vector<CVector2>>& predicted_trajectories, std::vector<size_t>& collisions);
 		// Function to adjust path to avoid collisions
 		//void AdjustPath();
     	void AdjustPath(std::vector<std::vector<CVector2>>& predicted_trajectories, const std::vector<CollisionInfo>& collisions);

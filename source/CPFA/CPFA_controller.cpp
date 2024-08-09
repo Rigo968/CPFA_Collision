@@ -493,11 +493,20 @@ void CPFA_controller::Surveying() {
             
 	}
 }
-
-// CONGESTED: the robot will stop and stay in place
+// 	if (collisionDelay < 5) {
+// 		Stop();
+// 		collisionDelay++;
+// 	}
+// 	else {
+// 		collisionDelay = 0;
+// 		CPFA_state = RETURNING;
+// 	}
 void CPFA_controller::Congested() {
- //LOG<<"Congested..."<<endl;
+
+	//make robot stop for 5 seconds using some sort of delay
+	//then set the state to returning
 	Stop();
+
 }
 
 
