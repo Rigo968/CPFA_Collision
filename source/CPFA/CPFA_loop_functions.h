@@ -177,8 +177,11 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		void PredictTrajectory(std::vector<CVector2>& predicted_positions, const RobotState& state, Real time_horizon, Real time_step);
 		// Function to detect potential collisions
 		//void DetectCollisions();
-    	void DetectCollisions(const std::vector<std::vector<CVector2>>& predicted_trajectories, std::vector<CollisionInfo>& collisions);
-		void DetectCollisions(const std::vector<std::vector<CVector2>>& predicted_trajectories, std::vector<size_t>& collisions);
+    	//void DetectCollisions(const std::vector<std::vector<CVector2>>& predicted_trajectories, std::vector<CollisionInfo>& collisions);
+		void DetectCollisions(const std::unordered_map<size_t, std::vector<CVector2>>& predicted_trajectories, std::vector<size_t>& collisions);
+		//make predicted_trajectories a dictionary 
+		//std::unordered_map<size_t, std::vector<CVector2>> predicted_trajectories;
+
 		// Function to adjust path to avoid collisions
 		//void AdjustPath();
     	void AdjustPath(std::vector<std::vector<CVector2>>& predicted_trajectories, const std::vector<CollisionInfo>& collisions);
@@ -191,7 +194,8 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		PyObject *pyFileName, *pyModule;
 		PyObject *pyCongestion,	*pyCallCongestion,	*pyCongestionArgs;
 
-		std::vector<std::vector<CVector2>> m_predicted_trajectories; // Vector to store predicted trajectories for all robots
+		//std::vector<std::vector<CVector2>> m_predicted_trajectories; // Vector to store predicted trajectories for all robots
+		std::unordered_map<size_t, std::vector<CVector2>> m_predicted_trajectories;
     	Real m_collision_threshold; // Distance threshold for detecting collisions
 };
 
