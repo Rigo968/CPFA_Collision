@@ -1080,24 +1080,62 @@ void CPFA_loop_functions::DetectCollisions(const std::unordered_map<size_t, std:
 
 // function that detects interstions with the predicted trajectories by checking if there is any angle made between them
 // if any angle exists between the two trajectories, then there is an intersection
-bool CPFA_loop_functions::DetectIntersection(const std::vector<CVector2>& trajectory1, const std::vector<CVector2>& trajectory2) {
-    for (size_t i = 0; i < trajectory1.size() - 1; ++i) {
-        for (size_t j = 0; j < trajectory2.size() - 1; ++j) {
-            CVector2 direction1 = trajectory1[i + 1] - trajectory1[i];
-            CVector2 direction2 = trajectory2[j + 1] - trajectory2[j];
+// bool CPFA_loop_functions::DetectIntersection(const std::vector<CVector2>& trajectory1, const std::vector<CVector2>& trajectory2) {
+//     for (size_t i = 0; i < trajectory1.size() - 1; ++i) {
+//         for (size_t j = 0; j < trajectory2.size() - 1; ++j) {
+//             CVector2 direction1 = trajectory1[i + 1] - trajectory1[i];
+//             CVector2 direction2 = trajectory2[j + 1] - trajectory2[j];
 
-            float cross_product = direction1.GetX() * direction2.GetY() - direction1.GetY() * direction2.GetX();
+//             float cross_product = direction1.GetX() * direction2.GetY() - direction1.GetY() * direction2.GetX();
 
-            if (cross_product != 0) {
-                // An angle exists between the two vectors, so there is an intersection
-                return true;
+//             if (cross_product != 0) {
+//                 // An angle exists between the two vectors, so there is an intersection
+//                 return true;
+//             }
+//         }
+//     }
+//     // No intersection found
+//     return false;
+// }
+
+void CPFA_loop_functions::DetectIntersection(const std::unordered_map<size_t, std::vector<CVector2>>& predicted_trajectories, std::vector<size_t>& intersections, double angle_threshold = 0.1) {
+    std::vector<size_t> keys;
+    for (const auto& element : predicted_trajectories) {
+        keys.push_back(element.first);
+    }
+
+    for (size_t i = 0; i < keys.size(); ++i) {
+        bool intersection_found = false;
+
+        for (size_t j = i + 1; j < keys.size() && !intersection_found; ++j) {
+            const std::vector<CVector2>& trajectory1 = predicted_trajectories.at(keys[i]);
+            const std::vector<CVector2>& trajectory2 = predicted_trajectories.at(keys[j]);
+
+            // Check for intersections by examining angles between trajectories
+            for (size_t t = 1; t < trajectory1.size(); ++t) {
+                if (t < trajectory2.size()) {
+                    CVector2 vec1 = trajectory1[t] - trajectory1[t - 1];
+                    CVector2 vec2 = trajectory2[t] - trajectory2[t - 1];
+
+                    double dot_product = vec1.DotProduct(vec2);
+                    double magnitude_product = vec1.Length() * vec2.Length();
+
+                    if (magnitude_product != 0) {
+                        double cos_angle = dot_product / magnitude_product;
+                        double angle = std::acos(cos_angle); // angle in radians
+
+                        if (std::abs(angle) > angle_threshold && std::abs(angle - CRadians::PI.GetValue()) > angle_threshold) {
+                            intersections.push_back(keys[i]);
+                            intersections.push_back(keys[j]);
+                            intersection_found = true;
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
-    // No intersection found
-    return false;
 }
-
 
 
 // void CPFA_loop_functions::AdjustPath(std::vector<std::vector<CVector2>>& predicted_trajectories, const std::vector<CollisionInfo>& collisions) {
