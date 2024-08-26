@@ -182,6 +182,8 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		//make predicted_trajectories a dictionary 
 		//std::unordered_map<size_t, std::vector<CVector2>> predicted_trajectories;
 
+		bool DetectIntersection(const std::vector<CVector2>& trajectory1, const std::vector<CVector2>& trajectory2);
+		
 		// Function to adjust path to avoid collisions
 		//void AdjustPath();
     	void AdjustPath(std::vector<std::vector<CVector2>>& predicted_trajectories, const std::vector<CollisionInfo>& collisions);

@@ -1048,55 +1048,73 @@ void CPFA_loop_functions::PredictTrajectory(std::vector<CVector2>& predicted_pos
 // 	}
 // }
 
-void CPFA_loop_functions::DetectCollisions(const std::unordered_map<size_t, std::vector<CVector2>>& predicted_trajectories, std::vector<size_t>& collisions) {
+void CPFA_loop_functions::DetectCollisions(const std::unordered_map<size_t, std::vector<CVector2>>& predicted_trajectories, std::vector<size_t>& collisions, std::vector<size_t>& intersections) {
     std::vector<size_t> collisionstemp;
-	//get key from predicted trajectories
-	std::vector<size_t> keys;
-	for (auto const& element : predicted_trajectories) {
-		keys.push_back(element.first);
-	}
-	// loop through predicted trajectories and compare each robot with all other robots
-	for (size_t i = 0; i < keys.size(); ++i) {
-		bool collision_found = false;
+    std::unordered_map<size_t, size_t> collision_count;
 
-		for (size_t j = i + 1; j < keys.size() && !collision_found; ++j) {
-			const std::vector<CVector2>& trajectory1 = predicted_trajectories.at(keys[i]);
-			const std::vector<CVector2>& trajectory2 = predicted_trajectories.at(keys[j]);
+    // Get keys from predicted trajectories
+    std::vector<size_t> keys;
+    for (auto const& element : predicted_trajectories) {
+        keys.push_back(element.first);
+    }
 
-			// Check if the two trajectories coincide
-			for (size_t t = 0; t < trajectory1.size(); ++t) {
-				if (t < trajectory2.size()) {
-					if ((trajectory1[t] - trajectory2[t]).SquareLength() < 0.05) {
-						collisionstemp.push_back(keys[i]);
-						collisions.push_back(keys[i]);
-						collision_found = true;
-						break;
-					}
-				}
-			}
-		}
-	}
+    // Loop through predicted trajectories and compare each robot with all other robots
+    for (size_t i = 0; i < keys.size(); ++i) {
+        bool collision_found = false;
+
+        if(std::find(collisionstemp.begin(), collisionstemp.end(), keys[i]) != collisionstemp.end()){
+            continue;
+        }
+
+        for (size_t j = i + 1; j < keys.size() && !collision_found; ++j) {
+            const std::vector<CVector2>& trajectory1 = predicted_trajectories.at(keys[i]);
+            const std::vector<CVector2>& trajectory2 = predicted_trajectories.at(keys[j]);
+
+            // Check if the two trajectories coincide
+            for (size_t t = 0; t < trajectory1.size(); ++t) {
+                if (t < trajectory2.size()) {
+                    if ((trajectory1[t] - trajectory2[t]).SquareLength() < 0.05) {
+                        collision_count[keys[i]]++;
+                        collisionstemp.push_back(keys[j]);
+                        if(collision_count[keys[i]] > 2){
+                            collisions.push_back(keys[i]);
+                            collision_found = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Append keys with only one collision to the intersections vector
+    for (auto const& element : collision_count) {
+        if (element.second == 1) {
+            intersections.push_back(element.first);
+        }
+    }
 }
 
 // function that detects interstions with the predicted trajectories by checking if there is any angle made between them
 // if any angle exists between the two trajectories, then there is an intersection
-bool CPFA_loop_functions::DetectIntersection(const std::vector<CVector2>& trajectory1, const std::vector<CVector2>& trajectory2) {
-    for (size_t i = 0; i < trajectory1.size() - 1; ++i) {
-        for (size_t j = 0; j < trajectory2.size() - 1; ++j) {
-            CVector2 direction1 = trajectory1[i + 1] - trajectory1[i];
-            CVector2 direction2 = trajectory2[j + 1] - trajectory2[j];
 
-            float cross_product = direction1.GetX() * direction2.GetY() - direction1.GetY() * direction2.GetX();
+// bool CPFA_loop_functions::DetectIntersection(const std::vector<CVector2>& trajectory1, const std::vector<CVector2>& trajectory2) {
+//     for (size_t i = 0; i < trajectory1.size() - 1; ++i) {
+//         for (size_t j = 0; j < trajectory2.size() - 1; ++j) {
+//             CVector2 direction1 = trajectory1[i + 1] - trajectory1[i];
+//             CVector2 direction2 = trajectory2[j + 1] - trajectory2[j];
 
-            if (cross_product != 0) {
-                // An angle exists between the two vectors, so there is an intersection
-                return true;
-            }
-        }
-    }
-    // No intersection found
-    return false;
-}
+//             float cross_product = direction1.GetX() * direction2.GetY() - direction1.GetY() * direction2.GetX();
+
+//             if (cross_product != 0) {
+//                 // An angle exists between the two vectors, so there is an intersection
+//                 return true;
+//             }
+//         }
+//     }
+//     // No intersection found
+//     return false;
+// }
 
 
 
