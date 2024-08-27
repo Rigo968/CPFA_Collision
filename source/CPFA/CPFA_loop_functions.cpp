@@ -1117,7 +1117,6 @@ void CPFA_loop_functions::DetectCollisions(const std::unordered_map<size_t, std:
 // }
 
 
-
 // void CPFA_loop_functions::AdjustPath(std::vector<std::vector<CVector2>>& predicted_trajectories, const std::vector<CollisionInfo>& collisions) {
 // 	for (size_t i = 0; i < collisions.size(); ++i) {
 // 		size_t robot1 = collisions[i].robot1;
