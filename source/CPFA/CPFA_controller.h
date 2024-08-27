@@ -86,7 +86,8 @@ class CPFA_controller : public BaseController {
 			SEARCHING = 1,
 			RETURNING = 2,
 			SURVEYING = 3,
-			CONGESTED = 4
+			CONGESTED = 4,
+			INTERSECTION = 5
 		} CPFA_state;
 
 		/* iAnt CPFA state functions */
@@ -96,6 +97,7 @@ class CPFA_controller : public BaseController {
 		void Returning();
 		void Surveying();
 		void Congested();
+		void Intersection();
 
 		/* CPFA helper functions */
 		void SetRandomSearchLocation();

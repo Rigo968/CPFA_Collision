@@ -195,6 +195,11 @@ void CPFA_controller::CPFA() {
 			//SetIsHeadingToNest(false);
 			Congested();
 			break;
+		case INTERSECTION:
+			//argos::LOG << "Intersection" << std::endl;
+			//SetIsHeadingToNest(false);
+			Intersection();
+			break;
 	}
 }
 
@@ -493,35 +498,24 @@ void CPFA_controller::Surveying() {
             
 	}
 }
-// 	if (collisionDelay < 5) {
-// 		Stop();
-// 		collisionDelay++;
-// 	}
-// 	else {
-// 		collisionDelay = 0;
-// 		CPFA_state = RETURNING;
-// 	}
+
 void CPFA_controller::Congested() {
 
-	//make robot stop for 5 seconds using some sort of delay
-	//then set the state to returning
-	//Stop();
 	//make a vector that has 0,0 not as target
-	std::vector<int> nest = {0, 0};
+	std::vector<double> nest = {0, 0};
 	//get position of robot
-	std::vector<int> position = {GetPosition().GetX(), GetPosition().GetY()};
+	std::vector<double> position = {GetPosition().GetX(), GetPosition().GetY()};
 	//get distance of robot from nest
-	int distance = sqrt(pow(nest[0] - position[0], 2) + pow(nest[1] - position[1], 2));
+	double distance = sqrt(pow(nest[0] - position[0], 2) + pow(nest[1] - position[1], 2));
 	//get angle
-	int angle = atan2(nest[1] - position[1], nest[0] - position[0]);
+	double angle = atan2(nest[1] - position[1], nest[0] - position[0]);
 
-
-    int new_distance = 2; // move x units away from the nest
-    int new_angle = angle + 45; // Adjust angle by 45 degrees to make a triangle like the paper
+    double new_distance = 2; // move x units away from the nest
+    double new_angle = angle + 45; // Adjust angle by 45 degrees to make a triangle like the paper
 
     // then calculate the new waypoint coordinates
-    int new_x = nest[0] + new_distance * cos(new_angle);
-    int new_y = nest[1] + new_distance * sin(new_angle);
+    double new_x = nest[0] + new_distance * cos(new_angle);
+    double new_y = nest[1] + new_distance * sin(new_angle);
 	
 	//make robot go to new_x, new_y
 	SetTarget(argos::CVector2(new_x, new_y));
@@ -532,6 +526,17 @@ void CPFA_controller::Congested() {
 	//SetTarget(argos::CVector2(0,0));
 }
 
+void CPFA_controller::Intersection() {
+	//make robot stop for 6 timesteps then go back to returning state
+	if (collisionDelay < 6) {
+		Stop();
+		collisionDelay++;
+	}
+	else {
+		collisionDelay = 0;
+		CPFA_state = RETURNING;
+	}
+}
 
 
 /*****
