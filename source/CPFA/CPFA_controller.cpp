@@ -505,8 +505,31 @@ void CPFA_controller::Congested() {
 
 	//make robot stop for 5 seconds using some sort of delay
 	//then set the state to returning
-	Stop();
+	//Stop();
+	//make a vector that has 0,0 not as target
+	std::vector<int> nest = {0, 0};
+	//get position of robot
+	std::vector<int> position = {GetPosition().GetX(), GetPosition().GetY()};
+	//get distance of robot from nest
+	int distance = sqrt(pow(nest[0] - position[0], 2) + pow(nest[1] - position[1], 2));
+	//get angle
+	int angle = atan2(nest[1] - position[1], nest[0] - position[0]);
 
+
+    int new_distance = 2; // move x units away from the nest
+    int new_angle = angle + 45; // Adjust angle by 45 degrees to make a triangle like the paper
+
+    // then calculate the new waypoint coordinates
+    int new_x = nest[0] + new_distance * cos(new_angle);
+    int new_y = nest[1] + new_distance * sin(new_angle);
+	
+	//make robot go to new_x, new_y
+	SetTarget(argos::CVector2(new_x, new_y));
+	//after it reaches the new_x, new_y, set the state to returning
+	if (distance < 0.05) {
+		CPFA_state = RETURNING;
+	}
+	//SetTarget(argos::CVector2(0,0));
 }
 
 

@@ -331,7 +331,7 @@ void CPFA_loop_functions::PostStep() {
 			//std::unordered_map<size_t, CVector2> predicted_positions;
 			// Predict trajectory
 			//PredictTrajectory(c2.GetId(), predicted_positions, current_state, time_horizon, time_step);
-			LOG << "Current position: " << current_state.position << " For Robot: " << c2.GetId() << std::endl;
+			// LOG << "Current position: " << current_state.position << " For Robot: " << c2.GetId() << std::endl;
 
 			std::vector<CVector2> predicted_positions_odd;
 			for (size_t i = 0; i < predicted_positions.size(); i++) {
@@ -351,8 +351,16 @@ void CPFA_loop_functions::PostStep() {
 	}
 
 	std::vector<size_t> collisions;
-	DetectCollisions(m_predicted_trajectories, collisions);
-	
+	std::vector<size_t> intersections;
+	DetectCollisions(m_predicted_trajectories, collisions, intersections);
+	//print contents of collisions vector and intersections vector
+	for (size_t i = 0; i < collisions.size(); i++) {
+		LOG << "Collision detected for Robot: " << collisions[i] << std::endl;
+	}
+	for (size_t i = 0; i < intersections.size(); i++) {
+		LOG << "Intersection detected for Robot: " << intersections[i] << std::endl;
+	}
+
 
 	
 	//log detected collisions
@@ -370,6 +378,12 @@ void CPFA_loop_functions::PostStep() {
 			c2.setStatus("CONGESTED");
 			argos::LOG << "Robot " << c2.GetId() << " is " << c2.GetStatus() << std::endl;
 		}
+
+		if (c2.GetStatus() == "RETURNING" && std::count(intersections.begin(), intersections.end(), index1) > 0) {
+			c2.setStatus("CONGESTED");
+			argos::LOG << "Robot " << c2.GetId() << " is " << c2.GetStatus() << std::endl;
+		}
+
 		//print status of each robot
 		//print contents of collisions vector
 
@@ -380,6 +394,11 @@ void CPFA_loop_functions::PostStep() {
 
 
 		if(c2.GetStatus() == "CONGESTED" && std::count(collisions.begin(), collisions.end(), index1) == 0) {
+			c2.setStatus("RETURNING");
+			argos::LOG << "Robot " << c2.GetId() << " is now back to " << c2.GetStatus() << std::endl;
+		}
+
+		if(c2.GetStatus() == "CONGESTED" && std::count(intersections.begin(), intersections.end(), index1) == 0) {
 			c2.setStatus("RETURNING");
 			argos::LOG << "Robot " << c2.GetId() << " is now back to " << c2.GetStatus() << std::endl;
 		}		
