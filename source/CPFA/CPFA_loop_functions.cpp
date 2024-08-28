@@ -374,13 +374,15 @@ void CPFA_loop_functions::PostStep() {
 		// if(c2.GetStatus() == "CONGESTED" && std::count(collisions.begin(), collisions.end(), index1) == 0) {
 		// 	c2.setStatus("RETURNING");
 		// }
+
+		// this logic is only if a robot is in the returning, but the algorithm detects it is in one of the two congested states.
 		if (c2.GetStatus() == "RETURNING" && std::count(collisions.begin(), collisions.end(), index1) > 0) {
 			c2.setStatus("CONGESTED");
 			argos::LOG << "Robot " << c2.GetId() << " is " << c2.GetStatus() << std::endl;
 		}
 
 		if (c2.GetStatus() == "RETURNING" && std::count(intersections.begin(), intersections.end(), index1) > 0) {
-			c2.setStatus("CONGESTED");
+			c2.setStatus("INTERSECTION");
 			argos::LOG << "Robot " << c2.GetId() << " is " << c2.GetStatus() << std::endl;
 		}
 
@@ -392,16 +394,16 @@ void CPFA_loop_functions::PostStep() {
 		// }
 
 
+		//no need for this logic anymore since robots will exit the congested states when they are no longer in the collision or intersection states
+		// if(c2.GetStatus() == "CONGESTED" && std::count(collisions.begin(), collisions.end(), index1) == 0) {
+		// 	c2.setStatus("RETURNING");
+		// 	argos::LOG << "Robot " << c2.GetId() << " is now back to " << c2.GetStatus() << std::endl;
+		// }
 
-		if(c2.GetStatus() == "CONGESTED" && std::count(collisions.begin(), collisions.end(), index1) == 0) {
-			c2.setStatus("RETURNING");
-			argos::LOG << "Robot " << c2.GetId() << " is now back to " << c2.GetStatus() << std::endl;
-		}
-
-		if(c2.GetStatus() == "CONGESTED" && std::count(intersections.begin(), intersections.end(), index1) == 0) {
-			c2.setStatus("RETURNING");
-			argos::LOG << "Robot " << c2.GetId() << " is now back to " << c2.GetStatus() << std::endl;
-		}		
+		// if(c2.GetStatus() == "CONGESTED" && std::count(intersections.begin(), intersections.end(), index1) == 0) {
+		// 	c2.setStatus("RETURNING");
+		// 	argos::LOG << "Robot " << c2.GetId() << " is now back to " << c2.GetStatus() << std::endl;
+		// }		
 	}
 
 

@@ -499,7 +499,13 @@ void CPFA_controller::Surveying() {
 	}
 }
 
+//this is coincident paths scenario. If a robot has coincident path with another robot, it will set a new waypoint to avoid collision
+// I think need to add logic in which the robot will be added to a list that way the robots arent chosen again
+// also how is it determing which robot out of the 2 will the waypoint be set for
 void CPFA_controller::Congested() {
+
+	//a new waypoint is only made the first time that a robot enters this state, the rest of the time it will just go to that specific waypoint
+	//so i need to add logic for this
 
 	//make a vector that has 0,0 not as target
 	std::vector<double> nest = {0, 0};
@@ -510,7 +516,7 @@ void CPFA_controller::Congested() {
 	//get angle
 	double angle = atan2(nest[1] - position[1], nest[0] - position[0]);
 
-    double new_distance = 2; // move x units away from the nest
+    double new_distance = distance/2; // move x units away from the nest
     double new_angle = angle + 45; // Adjust angle by 45 degrees to make a triangle like the paper
 
     // then calculate the new waypoint coordinates
@@ -526,6 +532,7 @@ void CPFA_controller::Congested() {
 	//SetTarget(argos::CVector2(0,0));
 }
 
+// this is if a two robots intersect at a certain point. In this case one robot will stop for 6 timesteps to let the other robot pass and avoid the collision
 void CPFA_controller::Intersection() {
 	//make robot stop for 6 timesteps then go back to returning state
 	if (collisionDelay < 6) {
