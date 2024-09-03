@@ -534,14 +534,14 @@ void CPFA_controller::Congested() {
 
 // this is if a two robots intersect at a certain point. In this case one robot will stop for 6 timesteps to let the other robot pass and avoid the collision
 void CPFA_controller::Intersection() {
-	//make robot stop for 6 timesteps then go back to returning state
-	if (collisionDelay < 6) {
+	//make robot stop for x timesteps then go back to returning state
+	if (collisionDelay < 100) {
 		Stop();
 		collisionDelay++;
 	}
 	else {
 		collisionDelay = 0;
-		CPFA_state = RETURNING;
+		//CPFA_state = RETURNING;
 	}
 }
 
@@ -1025,6 +1025,7 @@ string CPFA_controller::GetStatus(){//qilu 10/22
     else if (CPFA_state == RETURNING)return "RETURNING";
     else if (CPFA_state == SURVEYING) return "SURVEYING";
 	else if (CPFA_state == CONGESTED) return "CONGESTED";
+	else if(CPFA_state == INTERSECTION) return "INTERSECTION";
     //else if (MPFA_state == INACTIVE) return "INACTIVE";
     else return "SHUTDOWN";
     
@@ -1036,6 +1037,7 @@ void CPFA_controller::setStatus(string status){
 	else if(status == "RETURNING") CPFA_state = RETURNING;
 	else if(status == "SURVEYING") CPFA_state = SURVEYING;
 	else if(status == "CONGESTED") CPFA_state = CONGESTED;
+	else if(status == "INTERSECTION") CPFA_state = INTERSECTION;
 	//else if(status == "INACTIVE") MPFA_state = INACTIVE;
 }
 
