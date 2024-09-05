@@ -414,6 +414,26 @@ void CPFA_loop_functions::PostStep() {
 	// // Adjust paths based on detected collisions
 	// AdjustPath(m_predicted_trajectories, collisions);
 
+	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++, index++) {
+		argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
+		BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
+		CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
+		if(c2.GetStatus() == "RETURNING"){
+			size_t nest_counter;
+			argos::CVector2 position = c2.GetPosition();
+			//get euclidean distance of position to 0,0
+			double distance = sqrt(pow(position.GetX(), 2) + pow(position.GetY(), 2));
+
+			if(distance < 1) {
+				nest_counter++;
+			}
+
+			if(nest_counter > 6){
+				//if there are more than 6 robots near the nest, then the robot will not go near the nest but instead drop it at the border
+				c2.setStatus("RETURNINGV2");
+			}
+		}
+
 }
 
 bool CPFA_loop_functions::IsExperimentFinished() {

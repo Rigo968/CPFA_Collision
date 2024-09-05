@@ -546,6 +546,18 @@ void CPFA_controller::Intersection() {
 }
 
 
+void CPFA_controller::Working() {
+	//LOG<<"Working..."<<endl;
+	// If we are holding food, return to the nest.
+	if(isHoldingFood) {
+		SetTarget(LoopFunctions->NestPosition);
+		//CPFA_state = RETURNING;
+	}
+
+	// If we are not holding food, we will go to the food that the other robots dropped off around the nest radius boundary
+
+
+}
 /*****
  * RETURNING: Stay in this state until the robot has returned to the nest.
  * This state is triggered when a robot has found food or when it has given
