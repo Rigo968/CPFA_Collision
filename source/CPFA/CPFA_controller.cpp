@@ -558,6 +558,14 @@ void CPFA_controller::Working() {
 
 
 }
+
+//find where the code is dropping the resource and the call this function
+void CPFA_controller::DROPPED(){
+	Stop();
+	CPFA_state = RETURNING;
+}
+
+
 /*****
  * RETURNING: Stay in this state until the robot has returned to the nest.
  * This state is triggered when a robot has found food or when it has given

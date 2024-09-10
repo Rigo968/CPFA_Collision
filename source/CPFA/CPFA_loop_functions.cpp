@@ -216,18 +216,33 @@ void CPFA_loop_functions::PostStep() {
 	argos::CVector2 position;
 	vector<argos::CVector2> robotPosList2;
 	argos::CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
-	
+	//dictionary that holds the robot id as a key and the trajectory of the robot that has dropped a resource up to the last 50 values.
+	std::map<std::string, std::vector<argos::CVector2>> dropped_trajectories;
+
 	robotPosList.clear();
 	robotPosList2.clear();
-	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
+
+	size_t index = 0;
+	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++, index++) {
 	  argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
 	  BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
 	  CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
 	  position = c2.GetPosition();
 	  //robotPosList[c2.GetId()] = position;
 	  robotPosList2.push_back(position);
+
+		if(c2.GetStatus() == "DROPPED"){
+			dropped_trajectories[c2.GetId()] = robotPosList2[index-50:];
+		}
 	}
-	
+		
+
+
+
+
+
+
+
 	// for(map<string, CVector2>::iterator it= robotPosList.begin(); it!=robotPosList.end(); ++it) {
 	// 	argos::LOG << "pos["<< it->first <<"]="<< it->second << endl;
 	// }
@@ -413,27 +428,20 @@ void CPFA_loop_functions::PostStep() {
 	// }
 	// // Adjust paths based on detected collisions
 	// AdjustPath(m_predicted_trajectories, collisions);
-
+	size_t index = 0;
+	size_t index1 = 0;
 	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++, index++) {
 		argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
 		BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
 		CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
 		if(c2.GetStatus() == "RETURNING"){
-			size_t nest_counter;
 			argos::CVector2 position = c2.GetPosition();
-			//get euclidean distance of position to 0,0
-			double distance = sqrt(pow(position.GetX(), 2) + pow(position.GetY(), 2));
 
-			if(distance < 1) {
-				nest_counter++;
-			}
-
-			if(nest_counter > 6){
-				//if there are more than 6 robots near the nest, then the robot will not go near the nest but instead drop it at the border
-				c2.setStatus("RETURNINGV2");
-			}
+			//append the position to a dictionary with robot id as key and the position as value
+			robotPosList[c2.GetId()] = position;
 		}
 
+	}
 }
 
 bool CPFA_loop_functions::IsExperimentFinished() {
