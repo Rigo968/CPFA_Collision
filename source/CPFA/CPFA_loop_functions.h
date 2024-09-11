@@ -199,6 +199,8 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		//std::vector<std::vector<CVector2>> m_predicted_trajectories; // Vector to store predicted trajectories for all robots
 		std::unordered_map<size_t, std::vector<CVector2>> m_predicted_trajectories;
     	Real m_collision_threshold; // Distance threshold for detecting collisions
+		std::map<std::string, std::vector<argos::CVector2>> dropped_trajectories;
+
 };
 
 #endif /* CPFA_LOOP_FUNCTIONS_H */

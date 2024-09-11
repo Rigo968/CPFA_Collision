@@ -237,3 +237,12 @@ Forage: 4, 0, 2
 Forage: 2, 0, 0
 Forage: 2, 1, 1
 Forage: 2, 0, 1
+Forage: 2, 2, 1
+Forage: 1, 4, 6, 3
+Forage: 1, 5, 4, 5
+Forage: 3, 5, 6, 3
+Forage: 6, 5, 5, 5
+Forage: 5, 4, 5, 5
+Forage: 4, 6, 5, 2
+Forage: 3, 6, 9, 5
+Forage: 2, 5, 3, 7

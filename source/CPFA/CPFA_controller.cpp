@@ -200,6 +200,11 @@ void CPFA_controller::CPFA() {
 			//SetIsHeadingToNest(false);
 			Intersection();
 			break;
+		case DROPPED:
+			//argos::LOG << "Intersection" << std::endl;
+			//SetIsHeadingToNest(false);
+			Dropped();
+			break;
 	}
 }
 
@@ -546,23 +551,22 @@ void CPFA_controller::Intersection() {
 }
 
 
-void CPFA_controller::Working() {
-	//LOG<<"Working..."<<endl;
-	// If we are holding food, return to the nest.
-	if(isHoldingFood) {
-		SetTarget(LoopFunctions->NestPosition);
-		//CPFA_state = RETURNING;
-	}
+// void CPFA_controller::Working() {
+// 	//LOG<<"Working..."<<endl;
+// 	// If we are holding food, return to the nest.
+// 	if(isHoldingFood) {
+// 		SetTarget(LoopFunctions->NestPosition);
+// 		//CPFA_state = RETURNING;
+// 	}
 
-	// If we are not holding food, we will go to the food that the other robots dropped off around the nest radius boundary
+// 	// If we are not holding food, we will go to the food that the other robots dropped off around the nest radius boundary
 
 
-}
+// }
 
 //find where the code is dropping the resource and the call this function
-void CPFA_controller::DROPPED(){
-	Stop();
-	CPFA_state = RETURNING;
+void CPFA_controller::Dropped(){
+	CPFA_state = DEPARTING;
 }
 
 
@@ -637,7 +641,7 @@ void CPFA_controller::Returning() {
       }
 
 		isGivingUpSearch = false;
-		CPFA_state = DEPARTING;   
+		CPFA_state = DROPPED;   
         isHoldingFood = false; 
         travelingTime+=SimulationTick()-startTime;//qilu 10/22
         startTime = SimulationTick();//qilu 10/22
@@ -1046,6 +1050,7 @@ string CPFA_controller::GetStatus(){//qilu 10/22
     else if (CPFA_state == SURVEYING) return "SURVEYING";
 	else if (CPFA_state == CONGESTED) return "CONGESTED";
 	else if(CPFA_state == INTERSECTION) return "INTERSECTION";
+	else if(CPFA_state == DROPPED) return "DROPPED";
     //else if (MPFA_state == INACTIVE) return "INACTIVE";
     else return "SHUTDOWN";
     
@@ -1058,6 +1063,7 @@ void CPFA_controller::setStatus(string status){
 	else if(status == "SURVEYING") CPFA_state = SURVEYING;
 	else if(status == "CONGESTED") CPFA_state = CONGESTED;
 	else if(status == "INTERSECTION") CPFA_state = INTERSECTION;
+	else if(status == "DROPPED") CPFA_state = DROPPED;
 	//else if(status == "INACTIVE") MPFA_state = INACTIVE;
 }
 

@@ -217,231 +217,43 @@ void CPFA_loop_functions::PostStep() {
 	vector<argos::CVector2> robotPosList2;
 	argos::CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
 	//dictionary that holds the robot id as a key and the trajectory of the robot that has dropped a resource up to the last 50 values.
-	std::map<std::string, std::vector<argos::CVector2>> dropped_trajectories;
+	//std::map<std::string, std::vector<argos::CVector2>> dropped_trajectories;
 
 	robotPosList.clear();
-	robotPosList2.clear();
+	//robotPosList2.clear();
 
-	size_t index = 0;
-	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++, index++) {
+
+	//print timestep
+	argos::LOG << "timestep: " << GetSpace().GetSimulationClock() << std::endl;
+
+	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
 	  argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
 	  BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
 	  CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
 	  position = c2.GetPosition();
-	  //robotPosList[c2.GetId()] = position;
-	  robotPosList2.push_back(position);
+	  robotPosList[c2.GetId()] = position;
+	  //robotPosList2.push_back(position);
 
 		if(c2.GetStatus() == "DROPPED"){
-			dropped_trajectories[c2.GetId()] = robotPosList2[index-50:];
-		}
-	}
-		
-
-
-
-
-
-
-
-	// for(map<string, CVector2>::iterator it= robotPosList.begin(); it!=robotPosList.end(); ++it) {
-	// 	argos::LOG << "pos["<< it->first <<"]="<< it->second << endl;
-	// }
-
-	// for(size_t i = 0; i < robotPosList2.size(); i++) {
-	// 	argos::LOG << "pos["<< i <<"]="<< robotPosList2[i] << endl;
-	// }
-
-	//argos::LOG << GetSpace().GetSimulationClock() << std::endl; 	
-	// run congestion algorithm
-    vector<int> congestionResults = RunCongestion(robotPosList2);
-	// argos::LOG << congestionResults.size() << " robots in the arena" << std::endl;
-    // // Print the results
-    // for (size_t i = 0; i < congestionResults.size(); ++i) {
-    //     argos::LOG << "Robot " << congestionResults[i] << " is congested" << std::endl;
-    // }
-	//argos::LOG << std::endl;
-	// vector<argos::CVector2> robotPosList;
-	// argos::CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
-	// for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
-	// 	argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
-	// 	BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
-	// 	CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
-	// 	robotPosList.push_back(c2.GetPosition());
-
-	//if a robot is congested, set the robot's status to "CONGESTED"
-	// for(size_t i = 0; i < congestionResults.size(); i++) {
-	// 	argos::CSpace::TMapPerType::iterator it = footbots.begin();
-	// 	if (i == 0) {
-	// 		std::advance(it, congestionResults[i]);
-	// 	}
-	// 	else {
-	// 		std::advance(it, congestionResults[i] - congestionResults[i-1]);
-	// 	}
-	// 	argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
-	// 	BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
-	// 	CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
-	// 	// if (c2.GetStatus() == "SEARCHING") {
-	// 	// 	c2.setStatus("CONGESTED");
-	// 	// }
-	// 	//argos::LOG << i << std::endl;
-	// 	string status = c2.GetStatus();
-	// 	c2.setStatus("CONGESTED");
-	// 	c2.setStatus(status);
-	// }	
-	// get status the status of each robot and store it in a list
-
-	// size_t index = 0;
-	// for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++, index++) {
-	// 	argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
-	// 	BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
-	// 	CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
-		
-	// 	// if the index is in congestionResults, switch status
-	// 	if (c2.GetStatus() == "SEARCHING" && std::count(congestionResults.begin(), congestionResults.end(), index) > 0) {
-	// 		c2.setStatus("CONGESTED");
-	// 	}
-
-	// 	//argos::LOG << "Robot: " << c2.GetId() << ", Status: " << c2.GetStatus() << std::endl;
-	// 	// if(c2.GetStatus() == "CONGESTED" && std::find(congestionResults.begin(), congestionResults.end(), index) == congestionResults.end()) {
-	// 	// 	c2.setStatus("SEARCHING");
-	// 	// }
-
-	// 	if(c2.GetStatus() == "CONGESTED" && std::count(congestionResults.begin(), congestionResults.end(), index) == 0) {
-	// 		c2.setStatus("SEARCHING");
-	// 	}
-	// }
-
-
-	//get velocity of each robot
-	vector<CVector2> robotVelocities;
-
-	size_t index = 0;
-	size_t index1 = 0;
-
-
-    // Add member variables for state information, communication, etc.
-
-	vector<CVector2> headings;
-	
-	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++, index++) {
-		argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
-		BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
-		CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
-		if(c2.GetStatus() == "RETURNING"){
-			//headings.push_back(c2.GetHeading());
-			RobotState current_state;
-			current_state.position = c2.GetPosition(); // Function to get current position
-			//get velocity using distance between two positions over delta time
-			//current_state.velocity = (current_state.position - c2.GetPosition()) / 0.1; // Function to get current velocity
-
-			current_state.heading = c2.GetHeading();   // Function to get current heading
-
-			// Time parameters
-			Real time_horizon = 0.625f;
-			Real time_step = 0.03125f;
-
-			// Vector to store predicted positions
-			std::vector<CVector2> predicted_positions;
-			PredictTrajectory(predicted_positions, current_state, time_horizon, time_step);
-			//std::unordered_map<size_t, CVector2> predicted_positions;
-			// Predict trajectory
-			//PredictTrajectory(c2.GetId(), predicted_positions, current_state, time_horizon, time_step);
-			// LOG << "Current position: " << current_state.position << " For Robot: " << c2.GetId() << std::endl;
-
-			std::vector<CVector2> predicted_positions_odd;
-			for (size_t i = 0; i < predicted_positions.size(); i++) {
-				if (i % 2 == 1) {
-					predicted_positions_odd.push_back(predicted_positions[i]);
-				}
-			}
-
-			// for (const CVector2& pos : predicted_positions_odd) {				
-			// 	LOG << "Predicted position: " << pos << " For Robot: " << c2.GetId() << std::endl;
+			argos::LOG << "Robot " << c2.GetId() << " has dropped a resource" << std::endl;
+			std::vector<argos::CVector2> traj;
+			// if (robotPosList2.size() >= 50) {
+			traj.assign(robotPosList[c2.GetId()].end() - 50, robotPosList[c2.GetId()].end());
+			// } else {
+			// 	argos::LOG << "Not enough positions to create a trajectory" << std::endl;
+			// 	last50 = robotPosList2; // if there are less than 50 items, just take all
 			// }
+			dropped_trajectories[c2.GetId()] = traj;
 			
-			//m_predicted_trajectories.push_back(predicted_positions_odd);
-			// change predicted positions to a dictionary with robot id as key
-			m_predicted_trajectories[index] = predicted_positions_odd;
 		}
 	}
-
-	std::vector<size_t> collisions;
-	std::vector<size_t> intersections;
-	DetectCollisions(m_predicted_trajectories, collisions, intersections);
-	//print contents of collisions vector and intersections vector
-
-	// for (size_t i = 0; i < collisions.size(); i++) {
-	// 	LOG << "Collision detected for Robot: " << collisions[i] << std::endl;
-	// }
-	// for (size_t i = 0; i < intersections.size(); i++) {
-	// 	LOG << "Intersection detected for Robot: " << intersections[i] << std::endl;
-	// }
-
-
-	
-	//log detected collisions
-	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++, index1++) {
-		argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
-		BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
-		CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
-		// if (std::find(collisions.begin(), collisions.end(), index1) != collisions.end()) {
-		// 	c2.setStatus("CONGESTED");
-		// }
-		// if(c2.GetStatus() == "CONGESTED" && std::count(collisions.begin(), collisions.end(), index1) == 0) {
-		// 	c2.setStatus("RETURNING");
-		// }
-
-		// this logic is only if a robot is in the returning, but the algorithm detects it is in one of the two congested states.
-		if (c2.GetStatus() == "RETURNING" && std::count(collisions.begin(), collisions.end(), index1) > 0) {
-			c2.setStatus("CONGESTED");
-			argos::LOG << "Robot " << c2.GetId() << " is at " << c2.GetStatus() << " state." << std::endl;
+	for (auto const& pair : dropped_trajectories) {
+		argos::LOG << "Robot " << pair.first << " trajectory: ";
+		for (const auto& pos : pair.second) {
+			argos::LOG << "(" << pos.GetX() << ", " << pos.GetY() << "), ";
 		}
-
-		// if (c2.GetStatus() == "RETURNING" && std::count(intersections.begin(), intersections.end(), index1) > 0) {
-		// 	c2.setStatus("INTERSECTION");
-		// 	argos::LOG << "Robot " << c2.GetId() << " is at " << c2.GetStatus() << " state." << std::endl;
-		// }
-
-		//print status of each robot
-		//print contents of collisions vector
-
-		// for (size_t i = 0; i < collisions.size(); i++) {
-		// 	LOG << "Collision detected for Robot: " << collisions[i] << std::endl;
-		// }
-
-
-		//no need for this logic anymore since robots will exit the congested states when they are no longer in the collision or intersection states
-		// if(c2.GetStatus() == "CONGESTED" && std::count(collisions.begin(), collisions.end(), index1) == 0) {
-		// 	c2.setStatus("RETURNING");
-		// 	argos::LOG << "Robot " << c2.GetId() << " is now back to " << c2.GetStatus() << std::endl;
-		// }
-
-		// if(c2.GetStatus() == "CONGESTED" && std::count(intersections.begin(), intersections.end(), index1) == 0) {
-		// 	c2.setStatus("RETURNING");
-		// 	argos::LOG << "Robot " << c2.GetId() << " is now back to " << c2.GetStatus() << std::endl;
-		// }		
-	}
-
-
-	// for (size_t i = 0; i < collisions.size(); i++) {
-	// 	LOG << "Collision detected between Robot: " << collisions[i].robot1 << " and Robot: " << collisions[i].robot2 << std::endl;
-	// }
-	// // Adjust paths based on detected collisions
-	// AdjustPath(m_predicted_trajectories, collisions);
-	size_t index = 0;
-	size_t index1 = 0;
-	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++, index++) {
-		argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
-		BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
-		CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
-		if(c2.GetStatus() == "RETURNING"){
-			argos::CVector2 position = c2.GetPosition();
-
-			//append the position to a dictionary with robot id as key and the position as value
-			robotPosList[c2.GetId()] = position;
-		}
-
-	}
+		argos::LOG << std::endl;
+	}	
 }
 
 bool CPFA_loop_functions::IsExperimentFinished() {
