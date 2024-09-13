@@ -246,3 +246,7 @@ Forage: 5, 4, 5, 5
 Forage: 4, 6, 5, 2
 Forage: 3, 6, 9, 5
 Forage: 2, 5, 3, 7
+Forage: 2, 3, 2, 6
+Forage: 4, 4, 7, 3
+Forage: 3, 3, 6, 5
+Forage: 2, 2, 5, 3

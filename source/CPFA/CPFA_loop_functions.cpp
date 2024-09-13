@@ -233,27 +233,27 @@ void CPFA_loop_functions::PostStep() {
 	  position = c2.GetPosition();
 	  robotPosList[c2.GetId()] = position;
 	  //robotPosList2.push_back(position);
-
+	  robotPosList3[c2.GetId()].push_back(position);
 		if(c2.GetStatus() == "DROPPED"){
 			argos::LOG << "Robot " << c2.GetId() << " has dropped a resource" << std::endl;
 			std::vector<argos::CVector2> traj;
 			// if (robotPosList2.size() >= 50) {
-			traj.assign(robotPosList[c2.GetId()].end() - 50, robotPosList[c2.GetId()].end());
+			traj.assign(robotPosList3[c2.GetId()].end() - 50, robotPosList3[c2.GetId()].end());
 			// } else {
 			// 	argos::LOG << "Not enough positions to create a trajectory" << std::endl;
 			// 	last50 = robotPosList2; // if there are less than 50 items, just take all
 			// }
-			dropped_trajectories[c2.GetId()] = traj;
-			
+			dropped_trajectories[c2.GetId()].push_back(traj);
+			//dropped_trajectories2.push_back(traj);
 		}
 	}
-	for (auto const& pair : dropped_trajectories) {
-		argos::LOG << "Robot " << pair.first << " trajectory: ";
-		for (const auto& pos : pair.second) {
-			argos::LOG << "(" << pos.GetX() << ", " << pos.GetY() << "), ";
-		}
-		argos::LOG << std::endl;
-	}	
+	// for (auto const& pair : dropped_trajectories) {
+	// 	argos::LOG << "Robot " << pair.first << " trajectory: ";
+	// 	for (const auto& pos : pair.second) {
+	// 		argos::LOG << "(" << pos.GetX() << ", " << pos.GetY() << "), ";
+	// 	}
+	// 	argos::LOG << std::endl;
+	// }	
 }
 
 bool CPFA_loop_functions::IsExperimentFinished() {
@@ -380,7 +380,40 @@ void CPFA_loop_functions::PostExperiment() {
 		}
         
 		trajOutput.close();
-        
+
+		std::ofstream droppedtrajOutput((header + "iAntDroppedTrajData.txt").c_str(), std::ios::app);
+
+		// Check if the file was successfully opened
+		if (!trajOutput) {
+			std::cerr << "Error opening file for writing dropped trajectories." << std::endl;
+			return;
+		}
+
+		// Write a header or label for the data (if required)
+		droppedtrajOutput << "Dropped Trajectories\n";
+
+		// Iterate through each robot's dropped trajectories
+		for (std::map<std::string, std::vector<std::vector<argos::CVector2>>>::iterator it = dropped_trajectories.begin(); it != dropped_trajectories.end(); ++it) {
+			const std::string& robotId = it->first;  // Robot ID
+			const std::vector<std::vector<argos::CVector2>>& trajectories = it->second;  // Vector of trajectories
+
+			// Iterate through each trajectory for the current robot
+			for (size_t i = 0; i < trajectories.size(); ++i) {
+				const std::vector<argos::CVector2>& trajectory = trajectories[i];
+
+				// Write the robot ID and trajectory index (optional for clarity)
+				droppedtrajOutput << "Robot: " << robotId << ", Trajectory " << i + 1 << ":\n";
+
+				// Iterate through the positions in the trajectory
+				for (size_t j = 0; j < trajectory.size(); ++j) {
+					droppedtrajOutput << trajectory[j] << "; ";  // Write each position (CVector2)
+				}
+				droppedtrajOutput << "\n";  // Newline after each trajectory
+			}
+		}
+
+		// Close the file after writing
+		droppedtrajOutput.close();       
       }  
 
 	// get food collected for each robot at each timestep

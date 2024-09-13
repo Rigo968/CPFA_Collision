@@ -151,6 +151,8 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		argos::CRange<argos::Real>   ForageRangeY;
 		map<string, argos::CVector2> robotPosList; //qilu 06/2023
 		//vector<argos::CVector2> robotPosList; //qilu 06/2023
+		map<string, vector<argos::CVector2>> robotPosList3;
+
 		
                 Real   CollisionTime;
                 size_t currCollisionTime; 
@@ -199,8 +201,10 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		//std::vector<std::vector<CVector2>> m_predicted_trajectories; // Vector to store predicted trajectories for all robots
 		std::unordered_map<size_t, std::vector<CVector2>> m_predicted_trajectories;
     	Real m_collision_threshold; // Distance threshold for detecting collisions
-		std::map<std::string, std::vector<argos::CVector2>> dropped_trajectories;
+		//map<string, vector<argos::CVector2>> dropped_trajectories;
+		std::map<std::string, std::vector<std::vector<argos::CVector2>>> dropped_trajectories;
 
+		std::vector<argos::CVector2> dropped_trajectories2;
 };
 
 #endif /* CPFA_LOOP_FUNCTIONS_H */
