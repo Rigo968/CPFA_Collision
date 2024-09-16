@@ -166,6 +166,9 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 	private:
 		bool SetupPythonEnvironment();
 		
+		size_t counter_nest; // Current count of robots near the nest
+		std::vector<size_t> counter_nest_history; 
+		std::vector<size_t> collision_history;
 		// vector<int> RunCongestion(std::vector<std::pair<double, double>> dataset);
 		vector<int> RunCongestion(const std::vector<argos::CVector2>& robotPosList2);
 		/* private helper functions */

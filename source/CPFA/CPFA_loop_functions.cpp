@@ -222,31 +222,51 @@ void CPFA_loop_functions::PostStep() {
 	robotPosList.clear();
 	//robotPosList2.clear();
 
-
+	bool dropped_resource = false;
 	//print timestep
 	argos::LOG << "timestep: " << GetSpace().GetSimulationClock() << std::endl;
-
+	size_t counter_nest = 0;
+	//collisions occured
+	size_t collision_count = 0;
 	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
 	  argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
 	  BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
 	  CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
+		const argos::CCI_FootBotProximitySensor::TReadings& tProxReads = c2.GetProximitySensorReadings();
+
+		for(size_t i = 0; i < tProxReads.size(); ++i) {
+			if(tProxReads[i].Value > m_collision_threshold) { // Define a threshold to consider it a collision
+				// Handle collision
+				//argos::LOG << "Collision detected for robot " << c2.GetId() << std::endl;
+				collision_count++;
+			}
+		}
+
 	  position = c2.GetPosition();
 	  robotPosList[c2.GetId()] = position;
+	  //get distance from position to nest(0,0)
+	  double distance = sqrt(pow(position.GetX(), 2) + pow(position.GetY(), 2));
+	  //if distance is less than 1 increment counter
+	  if(distance < 1){
+		counter_nest++;
+	  }
 	  //robotPosList2.push_back(position);
 	  robotPosList3[c2.GetId()].push_back(position);
 		if(c2.GetStatus() == "DROPPED"){
+			dropped_resource = true;
 			argos::LOG << "Robot " << c2.GetId() << " has dropped a resource" << std::endl;
 			std::vector<argos::CVector2> traj;
-			// if (robotPosList2.size() >= 50) {
-			traj.assign(robotPosList3[c2.GetId()].end() - 50, robotPosList3[c2.GetId()].end());
-			// } else {
-			// 	argos::LOG << "Not enough positions to create a trajectory" << std::endl;
-			// 	last50 = robotPosList2; // if there are less than 50 items, just take all
-			// }
+			traj.assign(robotPosList3[c2.GetId()].end() - 70, robotPosList3[c2.GetId()].end()- 20);
+
 			dropped_trajectories[c2.GetId()].push_back(traj);
+			counter_nest_history.push_back(counter_nest);
 			//dropped_trajectories2.push_back(traj);
 		}
 	}
+	if (dropped_resource) {
+		collision_history.push_back(collision_count);
+	}
+	
 	// for (auto const& pair : dropped_trajectories) {
 	// 	argos::LOG << "Robot " << pair.first << " trajectory: ";
 	// 	for (const auto& pos : pair.second) {
@@ -402,7 +422,7 @@ void CPFA_loop_functions::PostExperiment() {
 				const std::vector<argos::CVector2>& trajectory = trajectories[i];
 
 				// Write the robot ID and trajectory index (optional for clarity)
-				droppedtrajOutput << "Robot: " << robotId << ", Trajectory " << i + 1 << ":\n";
+				droppedtrajOutput << "Robot: " << robotId << ", Nest Counter: " << counter_nest_history[i] << ", Collision Counter: " << collision_history[i] <<", Trajectory " << i + 1 << ":\n";
 
 				// Iterate through the positions in the trajectory
 				for (size_t j = 0; j < trajectory.size(); ++j) {
@@ -411,6 +431,12 @@ void CPFA_loop_functions::PostExperiment() {
 				droppedtrajOutput << "\n";  // Newline after each trajectory
 			}
 		}
+		
+		// droppedtrajOutput << "\nRobots near the nest at each timestep:\n";
+
+		// for (size_t i = 0; i < counter_nest_history.size(); ++i) {
+		// 	droppedtrajOutput << "Timestep " << i << ": " << counter_nest_history[i] << "\n";
+		// }
 
 		// Close the file after writing
 		droppedtrajOutput.close();       

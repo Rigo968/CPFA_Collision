@@ -19,7 +19,9 @@ class BaseController : public argos::CCI_Controller {
 	public:
 
 		BaseController();
-
+		const argos::CCI_FootBotProximitySensor::TReadings& GetProximitySensorReadings() const {
+			return proximitySensor->GetReadings();
+		}
 		/*  navigation functions */
 		argos::CRadians GetHeading();
 		argos::CVector2 GetPosition();
