@@ -224,8 +224,20 @@ void CPFA_loop_functions::PostStep() {
 
 	bool dropped_resource = false;
 	//print timestep
-	argos::LOG << "timestep: " << GetSpace().GetSimulationClock() << std::endl;
+	//argos::LOG << "timestep: " << GetSpace().GetSimulationClock() << std::endl;
 	size_t counter_nest = 0;
+	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
+	  argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
+	  BaseController& c = dynamic_cast<BaseController&>(footBot.GetControllableEntity().GetController());
+	  CPFA_controller& c2 = dynamic_cast<CPFA_controller&>(c);
+	  //get distance from position to nest(0,0)
+	  position = c2.GetPosition();
+	  double distance = sqrt(pow(position.GetX(), 2) + pow(position.GetY(), 2));
+	  //if distance is less than 1 increment counter
+	  if(distance < 1){
+		counter_nest++;
+	  }	
+	}
 	//collisions occured
 	size_t collision_count = 0;
 	for(argos::CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
@@ -239,28 +251,47 @@ void CPFA_loop_functions::PostStep() {
 				// Handle collision
 				//argos::LOG << "Collision detected for robot " << c2.GetId() << std::endl;
 				collision_count++;
+				break;
 			}
 		}
 
 	  position = c2.GetPosition();
 	  robotPosList[c2.GetId()] = position;
-	  //get distance from position to nest(0,0)
-	  double distance = sqrt(pow(position.GetX(), 2) + pow(position.GetY(), 2));
-	  //if distance is less than 1 increment counter
-	  if(distance < 1){
-		counter_nest++;
-	  }
+
 	  //robotPosList2.push_back(position);
 	  robotPosList3[c2.GetId()].push_back(position);
-		if(c2.GetStatus() == "DROPPED"){
-			dropped_resource = true;
-			argos::LOG << "Robot " << c2.GetId() << " has dropped a resource" << std::endl;
-			std::vector<argos::CVector2> traj;
-			traj.assign(robotPosList3[c2.GetId()].end() - 70, robotPosList3[c2.GetId()].end()- 20);
+		// if(c2.GetStatus() == "DROPPED"){
+		// 	dropped_resource = true;
+		// 	argos::LOG << "Robot " << c2.GetId() << " has dropped a resource" << std::endl;
+		// 	std::vector<argos::CVector2> traj;
+		// 	traj.assign(robotPosList3[c2.GetId()].end() - 100, robotPosList3[c2.GetId()].end());
 
+		// 	dropped_trajectories[c2.GetId()].push_back(traj);
+		// 	counter_nest_history.push_back(counter_nest);
+		// }
+		if(c2.GetStatus() == "FOUND"){
+			argos::LOG << "Robot " << c2.GetId() << " has found a resource" << std::endl;
+			temp_trajectories[c2.GetId()].push_back(c2.GetPosition());
+		}
+		else if(c2.GetStatus() == "DROPPED"){
+			dropped_resource = true;
+			std::vector<argos::CVector2> traj;
+			argos::LOG << "Robot " << c2.GetId() << " has dropped a resource" << std::endl;			
+			// for (const auto& pos : temp_trajectories[c2.GetId()]) {
+			// 	argos::LOG << "(" << pos.GetX() << ", " << pos.GetY() << "), ";
+			// }
+			// argos::LOG << std::endl;
+			traj = temp_trajectories[c2.GetId()];
 			dropped_trajectories[c2.GetId()].push_back(traj);
 			counter_nest_history.push_back(counter_nest);
-			//dropped_trajectories2.push_back(traj);
+			temp_trajectories.erase(c2.GetId()); // remove the trajectory from temp_trajectories
+		}
+		else {
+			// If the robot is not in the "FOUND" or "DROPPED" state but temp_trajectories contains its ID,
+			// it means the robot is moving towards the nest with a resource. Add its current position to the trajectory.
+			if(temp_trajectories.count(c2.GetId()) > 0) {
+				temp_trajectories[c2.GetId()].push_back(c2.GetPosition());
+			}
 		}
 	}
 	if (dropped_resource) {

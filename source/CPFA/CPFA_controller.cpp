@@ -205,6 +205,11 @@ void CPFA_controller::CPFA() {
 			//SetIsHeadingToNest(false);
 			Dropped();
 			break;
+		case FOUND:
+			//argos::LOG << "Intersection" << std::endl;
+			//SetIsHeadingToNest(false);
+			Found();
+			break;
 	}
 }
 
@@ -348,6 +353,10 @@ void CPFA_controller::Departing()
 
 }
 
+void CPFA_controller::Found() {
+	CPFA_state = RETURNING;
+}
+
 void CPFA_controller::Searching() {
  //LOG<<"Searching..."<<endl;
 	// "scan" for food only every half of a second
@@ -374,7 +383,7 @@ void CPFA_controller::Searching() {
 	         LoopFunctions->FidelityList.erase(controllerID);
              isUsingSiteFidelity = false; 
              updateFidelity = false; 
-             CPFA_state = RETURNING;
+             CPFA_state = FOUND;
              searchingTime+=SimulationTick()-startTime;
              startTime = SimulationTick();
 
@@ -1051,6 +1060,7 @@ string CPFA_controller::GetStatus(){//qilu 10/22
 	else if (CPFA_state == CONGESTED) return "CONGESTED";
 	else if(CPFA_state == INTERSECTION) return "INTERSECTION";
 	else if(CPFA_state == DROPPED) return "DROPPED";
+	else if(CPFA_state == FOUND) return "FOUND";
     //else if (MPFA_state == INACTIVE) return "INACTIVE";
     else return "SHUTDOWN";
     
@@ -1064,6 +1074,7 @@ void CPFA_controller::setStatus(string status){
 	else if(status == "CONGESTED") CPFA_state = CONGESTED;
 	else if(status == "INTERSECTION") CPFA_state = INTERSECTION;
 	else if(status == "DROPPED") CPFA_state = DROPPED;
+	else if(status == "FOUND") CPFA_state = FOUND;
 	//else if(status == "INACTIVE") MPFA_state = INACTIVE;
 }
 

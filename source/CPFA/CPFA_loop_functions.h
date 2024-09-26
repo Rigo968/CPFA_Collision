@@ -206,7 +206,8 @@ class CPFA_loop_functions : public argos::CLoopFunctions
     	Real m_collision_threshold; // Distance threshold for detecting collisions
 		//map<string, vector<argos::CVector2>> dropped_trajectories;
 		std::map<std::string, std::vector<std::vector<argos::CVector2>>> dropped_trajectories;
-
+		std::map<std::string, vector<argos::CVector2>> temp_trajectories;
+		std::map<std::string, vector<argos::CVector2>> temp2_trajectories;
 		std::vector<argos::CVector2> dropped_trajectories2;
 };
 
