@@ -39,7 +39,6 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		bool IsExperimentFinished();
 		void PostExperiment();
 		argos::CColor GetFloorColor(const argos::CVector2 &c_pos_on_floor);
-
 		// GA Functions
 		
 		/* Configures the robot controller from the genome */
@@ -115,10 +114,10 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		size_t ClusterWidthX;
 		size_t ClusterWidthY;
 		size_t PowerRank;
-                size_t ArenaWidth;
-                size_t SimTime; 
-                Real curr_time_in_minutes; 
-                Real last_time_in_minutes; 
+		size_t ArenaWidth;
+		size_t SimTime; 
+		Real curr_time_in_minutes; 
+		Real last_time_in_minutes; 
   
 		/* CPFA variables */
 		argos::Real ProbabilityOfSwitchingToSearching;
@@ -150,6 +149,7 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		argos::CRange<argos::Real>   ForageRangeX;
 		argos::CRange<argos::Real>   ForageRangeY;
 		map<string, argos::CVector2> robotPosList; //qilu 06/2023
+		map<string, vector<pair<size_t, argos::CVector2>>> robotPosList2;
 		//vector<argos::CVector2> robotPosList; //qilu 06/2023
 		map<string, vector<argos::CVector2>> robotPosList3;
 
@@ -205,7 +205,10 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		std::unordered_map<size_t, std::vector<CVector2>> m_predicted_trajectories;
     	Real m_collision_threshold; // Distance threshold for detecting collisions
 		//map<string, vector<argos::CVector2>> dropped_trajectories;
+	public:
 		std::map<std::string, std::vector<std::vector<argos::CVector2>>> dropped_trajectories;
+		std::map<std::string, std::vector<std::vector<std::pair<size_t, argos::CVector2>>>> d_t;
+		std::map<string, vector<pair<size_t, argos::CVector2>>>t_trajectories;
 		std::map<std::string, vector<argos::CVector2>> temp_trajectories;
 		std::map<std::string, vector<argos::CVector2>> temp2_trajectories;
 		std::vector<argos::CVector2> dropped_trajectories2;

@@ -50,7 +50,7 @@
          />
 
          <settings ClusterWidthX="8" ClusterWidthY="8" DrawDensityRate="4" DrawIDs="1" 
-	 DrawTargetRays="1" DrawTrails="0" FoodDistribution="1" FoodItemCount="128" 
+	 DrawTargetRays="1" DrawTrails="1" FoodDistribution="1" FoodItemCount="128" 
 	 FoodRadius="0.05" MaxSimCounter="1" MaxSimTimeInSeconds="1800" 
 	 NestElevation="0.001" NestPosition="0,0" NestRadius="0.15" NumberOfClusters="2" OutputData="0" 
 	 PowerlawFoodUnitCount="128" VariableFoodPlacement="0"/>

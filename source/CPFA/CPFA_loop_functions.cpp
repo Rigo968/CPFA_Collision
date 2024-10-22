@@ -5,9 +5,9 @@ CPFA_loop_functions::CPFA_loop_functions() :
         SimTime(0),
 	//MaxSimTime(3600 * GetSimulator().GetPhysicsEngine("dyn2d").GetInverseSimulationClockTick()),
     MaxSimTime(0),//qilu 02/05/2021
-        CollisionTime(0), 
-        lastNumCollectedFood(0),
-        currNumCollectedFood(0),
+	CollisionTime(0), 
+	lastNumCollectedFood(0),
+	currNumCollectedFood(0),
 	ResourceDensityDelay(0),
 	RandomSeed(GetSimulator().GetRandomSeed()),
 	SimCounter(0),
@@ -154,7 +154,8 @@ void CPFA_loop_functions::Reset() {
 	FidelityList.clear();
     TargetRayList.clear();
     Trajectory.clear();
-    
+    t_trajectories.clear();
+    d_t.clear();
     SetFoodDistribution();
     
     argos::CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
@@ -214,7 +215,7 @@ void CPFA_loop_functions::PreStep() {
 void CPFA_loop_functions::PostStep() {
 	// get x,y coordinate of each robot
 	argos::CVector2 position;
-	vector<argos::CVector2> robotPosList2;
+	//vector<argos::CVector2> robotPosList2;
 	argos::CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
 	//dictionary that holds the robot id as a key and the trajectory of the robot that has dropped a resource up to the last 50 values.
 	//std::map<std::string, std::vector<argos::CVector2>> dropped_trajectories;
@@ -254,12 +255,12 @@ void CPFA_loop_functions::PostStep() {
 				break;
 			}
 		}
-
+	  size_t timestep = GetSpace().GetSimulationClock();
 	  position = c2.GetPosition();
 	  robotPosList[c2.GetId()] = position;
-
+	  robotPosList2[c2.GetId()].push_back(make_pair(timestep, position));
 	  //robotPosList2.push_back(position);
-	  robotPosList3[c2.GetId()].push_back(position);
+	  //robotPosList3[c2.GetId()].push_back(position);
 		// if(c2.GetStatus() == "DROPPED"){
 		// 	dropped_resource = true;
 		// 	argos::LOG << "Robot " << c2.GetId() << " has dropped a resource" << std::endl;
@@ -269,28 +270,35 @@ void CPFA_loop_functions::PostStep() {
 		// 	dropped_trajectories[c2.GetId()].push_back(traj);
 		// 	counter_nest_history.push_back(counter_nest);
 		// }
-		if(c2.GetStatus() == "FOUND"){
+		if(c2.GetStatus() == "FOUND" && !c2.IsGivingUpSearch()){
 			argos::LOG << "Robot " << c2.GetId() << " has found a resource" << std::endl;
 			temp_trajectories[c2.GetId()].push_back(c2.GetPosition());
+			t_trajectories[c2.GetId()].push_back(make_pair(timestep, c2.GetPosition()));
 		}
-		else if(c2.GetStatus() == "DROPPED"){
+		else if(c2.GetStatus() == "DROPPED" && !c2.IsGivingUpSearch()){
 			dropped_resource = true;
 			std::vector<argos::CVector2> traj;
+			std::vector<pair<size_t, argos::CVector2>> traj1;
 			argos::LOG << "Robot " << c2.GetId() << " has dropped a resource" << std::endl;			
 			// for (const auto& pos : temp_trajectories[c2.GetId()]) {
 			// 	argos::LOG << "(" << pos.GetX() << ", " << pos.GetY() << "), ";
 			// }
 			// argos::LOG << std::endl;
 			traj = temp_trajectories[c2.GetId()];
+			traj1 = t_trajectories[c2.GetId()];
 			dropped_trajectories[c2.GetId()].push_back(traj);
+			d_t[c2.GetId()].push_back(traj1);
 			counter_nest_history.push_back(counter_nest);
 			temp_trajectories.erase(c2.GetId()); // remove the trajectory from temp_trajectories
+			t_trajectories.erase(c2.GetId());
 		}
 		else {
 			// If the robot is not in the "FOUND" or "DROPPED" state but temp_trajectories contains its ID,
 			// it means the robot is moving towards the nest with a resource. Add its current position to the trajectory.
 			if(temp_trajectories.count(c2.GetId()) > 0) {
 				temp_trajectories[c2.GetId()].push_back(c2.GetPosition());
+				t_trajectories[c2.GetId()].push_back(make_pair(timestep, c2.GetPosition()));
+				
 			}
 		}
 	}
@@ -336,7 +344,6 @@ bool CPFA_loop_functions::IsExperimentFinished() {
 }
 
 void CPFA_loop_functions::PostExperiment() {
-	  
     //  printf("%f, %f, %lu\n", score, getSimTimeInSeconds(), RandomSeed);
     //  printf("%f\n", score);  
                   
@@ -392,13 +399,12 @@ void CPFA_loop_functions::PostExperiment() {
         }
         //travelSearchTimeDataOutput<< total_travel_time/ticks_per_second<<", "<<total_search_time/ticks_per_second<<endl;
         //travelSearchTimeDataOutput.close();   
-             
         ofstream dataOutput( (header+ "iAntTagDa.txt").c_str(), ios::app);
         // output to file
         if(dataOutput.tellp() == 0) {
             dataOutput << "tags_collected, collisions_in_seconds, time_in_minutes, random_seed\n";//qilu 08/18
         }
-    
+
         //dataOutput <<data.CollisionTime/16.0<<", "<< time_in_minutes << ", " << data.RandomSeed << endl;
         //dataOutput << Score() << ", "<<(CollisionTime-16*Score())/(2*ticks_per_second)<< ", "<< curr_time_in_minutes <<", "<<RandomSeed<<endl;
         dataOutput << Score() << ", "<<CollisionTime/(2*ticks_per_second)<< ", "<< curr_time_in_minutes <<", "<<RandomSeed<<endl;
@@ -451,7 +457,6 @@ void CPFA_loop_functions::PostExperiment() {
 			// Iterate through each trajectory for the current robot
 			for (size_t i = 0; i < trajectories.size(); ++i) {
 				const std::vector<argos::CVector2>& trajectory = trajectories[i];
-
 				// Write the robot ID and trajectory index (optional for clarity)
 				droppedtrajOutput << "Robot: " << robotId << ", Nest Counter: " << counter_nest_history[i] << ", Collision Counter: " << collision_history[i] <<", Trajectory " << i + 1 << ":\n";
 
@@ -471,7 +476,49 @@ void CPFA_loop_functions::PostExperiment() {
 
 		// Close the file after writing
 		droppedtrajOutput.close();       
-      }  
+      double Timestep = 0.03125;
+	  std::ofstream droptrajOutput((header + "iAntDroppedTrajData1.txt").c_str(), std::ios::app);
+
+		// Check if the file was successfully opened
+		if (!trajOutput) {
+			std::cerr << "Error opening file for writing dropped trajectories." << std::endl;
+			return;
+		}
+
+		// Write a header or label for the data (if required)
+		droptrajOutput << "Dropped Trajectories\n";
+
+		// Iterate through each robot's dropped trajectories
+
+		for (std::map<std::string, std::vector<std::vector<pair<size_t, argos::CVector2>>>>::iterator it= d_t.begin(); it != d_t.end(); ++it) {
+			const std::string& robotId = it->first;  // Robot ID
+			const std::vector<std::vector<pair<size_t, argos::CVector2>>>& trajs = it->second;  // Vector of trajectories
+
+			// Iterate through each trajectory for the current robot
+			for (size_t i = 0; i < trajs.size(); ++i) {
+				const std::vector<pair<size_t, argos::CVector2>>& traject = trajs[i];
+				// Write the robot ID and trajectory index (optional for clarity)
+				droptrajOutput << "Robot: " << robotId << ", Nest Counter: " << counter_nest_history[i] << ", Collision Counter: " << collision_history[i] <<", Trajectory " << i + 1 << ":\n";
+				// Iterate through the positions in the trajectory
+				for (int j = 0; j < traject.size(); ++j) {
+					double time_step_value = Timestep * j;
+
+					droptrajOutput <<"Time Step: " << time_step_value <<", " << traject[j].second << "; ";  // Write each position (CVector2)
+				}
+				droptrajOutput << "\n";  // Newline after each trajectory
+			}
+		}
+		droptrajOutput.close();     
+		// droppedtrajOutput << "\nRobots near the nest at each timestep:\n";
+
+		// for (size_t i = 0; i < counter_nest_history.size(); ++i) {
+		// 	droppedtrajOutput << "Timestep " << i << ": " << counter_nest_history[i] << "\n";
+		// }
+
+		// Close the file after writing
+		droppedtrajOutput.close();    
+	}
+		//droptrajOutput.close();       
 
 	// get food collected for each robot at each timestep
 	ofstream foodOutput( "./results/foodData.txt", ios::app);

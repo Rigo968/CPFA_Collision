@@ -165,6 +165,7 @@ bool CPFA_controller::IsUsingSiteFidelity() {
 void CPFA_controller::CPFA() {
 	
 	switch(CPFA_state) {
+	
 		// depart from nest after food drop off or simulation start
 		case DEPARTING:
 			//argos::LOG << "DEPARTING" << std::endl;
@@ -383,7 +384,7 @@ void CPFA_controller::Searching() {
 	         LoopFunctions->FidelityList.erase(controllerID);
              isUsingSiteFidelity = false; 
              updateFidelity = false; 
-             CPFA_state = FOUND;
+             CPFA_state = RETURNING;
              searchingTime+=SimulationTick()-startTime;
              startTime = SimulationTick();
 
@@ -505,7 +506,7 @@ void CPFA_controller::Surveying() {
 	else {
 		SetIsHeadingToNest(false); // Turn on error for this
 		SetTarget(LoopFunctions->NestPosition); 
-		CPFA_state = RETURNING;
+		CPFA_state = FOUND;
 		survey_count = 0; // Reset
         searchingTime+=SimulationTick()-startTime;//qilu 10/22
         startTime = SimulationTick();//qilu 10/22
@@ -575,10 +576,9 @@ void CPFA_controller::Intersection() {
 
 //find where the code is dropping the resource and the call this function
 void CPFA_controller::Dropped(){
+	isGivingUpSearch = false;
 	CPFA_state = DEPARTING;
 }
-
-
 /*****
  * RETURNING: Stay in this state until the robot has returned to the nest.
  * This state is triggered when a robot has found food or when it has given
@@ -649,7 +649,6 @@ void CPFA_controller::Returning() {
             isUsingSiteFidelity = false;
       }
 
-		isGivingUpSearch = false;
 		CPFA_state = DROPPED;   
         isHoldingFood = false; 
         travelingTime+=SimulationTick()-startTime;//qilu 10/22
@@ -775,7 +774,6 @@ void CPFA_controller::SetHoldingFood() {
          LoopFunctions->FoodList = newFoodList;
          LoopFunctions->FoodColoringList = newFoodColoringList; //qilu 09/12/2016
          SetLocalResourceDensity();
-        
       }
       newFoodList.clear();
      newFoodColoringList.clear();
@@ -1078,6 +1076,9 @@ void CPFA_controller::setStatus(string status){
 	//else if(status == "INACTIVE") MPFA_state = INACTIVE;
 }
 
+bool CPFA_controller::IsGivingUpSearch() const {
+    return isGivingUpSearch; // Assuming isGivingUpSearch is a member variable
+}
 /*****
  * Return the Poisson cumulative probability at a given k and lambda.
  *****/

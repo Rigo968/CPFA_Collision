@@ -1,12 +1,11 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/Nest_autogen.dir/AutogenUsed.txt"
+  "CMakeFiles/Nest_autogen.dir/ParseCache.txt"
   "Nest_autogen"
-  "CMakeFiles/Nest_autogen.dir/AutogenOldSettings.cmake"
-  "BaseController_autogen"
-  "CMakeFiles/BaseController_autogen.dir/AutogenOldSettings.cmake"
-  "Pheromone_autogen"
-  "CMakeFiles/Pheromone_autogen.dir/AutogenOldSettings.cmake"
   "CMakeFiles/Nest.dir/Nest.cpp.o"
+  "CMakeFiles/Nest.dir/Nest.cpp.o.d"
   "CMakeFiles/Nest.dir/Nest_autogen/mocs_compilation.cpp.o"
+  "CMakeFiles/Nest.dir/Nest_autogen/mocs_compilation.cpp.o.d"
   "libNest.pdb"
   "libNest.so"
 )

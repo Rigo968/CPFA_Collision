@@ -15,8 +15,9 @@ class CPFA_loop_functions;
 class CPFA_qt_user_functions : public argos::CQTOpenGLUserFunctions {
 
 	public:
-
 		CPFA_qt_user_functions();
+
+		CPFA_qt_user_functions(CPFA_loop_functions& loopFunctions);
 
 		/* interface functions between QT and ARGoS */
 		void DrawOnRobot(argos::CFootBotEntity& entity);
@@ -30,7 +31,7 @@ class CPFA_qt_user_functions : public argos::CQTOpenGLUserFunctions {
 		void DrawFidelity();
 		void DrawPheromones();
 		void DrawTargetRays();
-		
+		void DrawTrails();
 		CPFA_loop_functions& loopFunctions;
  
 };

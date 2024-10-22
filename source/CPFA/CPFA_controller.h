@@ -29,6 +29,7 @@ class CPFA_controller : public BaseController {
 		void ControlStep();
 		void Reset();
 
+		bool IsGivingUpSearch() const;
 		bool IsHoldingFood();
 		bool IsUsingSiteFidelity();
 		bool IsInTheNest();
@@ -49,7 +50,7 @@ class CPFA_controller : public BaseController {
         
 
 	private:
-  string 			controllerID;//qilu 07/26/2016
+  		string 			controllerID;//qilu 07/26/2016
 		CCI_DifferentialSteeringActuator* m_pcWheels; //defining wheels
 		CPFA_loop_functions* LoopFunctions;
 		argos::CRandom::CRNG* RNG;

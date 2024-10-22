@@ -1,12 +1,11 @@
 file(REMOVE_RECURSE
-  "Nest_autogen"
-  "CMakeFiles/Nest_autogen.dir/AutogenOldSettings.cmake"
-  "BaseController_autogen"
-  "CMakeFiles/BaseController_autogen.dir/AutogenOldSettings.cmake"
+  "CMakeFiles/Pheromone_autogen.dir/AutogenUsed.txt"
+  "CMakeFiles/Pheromone_autogen.dir/ParseCache.txt"
   "Pheromone_autogen"
-  "CMakeFiles/Pheromone_autogen.dir/AutogenOldSettings.cmake"
   "CMakeFiles/Pheromone.dir/Pheromone.cpp.o"
+  "CMakeFiles/Pheromone.dir/Pheromone.cpp.o.d"
   "CMakeFiles/Pheromone.dir/Pheromone_autogen/mocs_compilation.cpp.o"
+  "CMakeFiles/Pheromone.dir/Pheromone_autogen/mocs_compilation.cpp.o.d"
   "libPheromone.pdb"
   "libPheromone.so"
 )

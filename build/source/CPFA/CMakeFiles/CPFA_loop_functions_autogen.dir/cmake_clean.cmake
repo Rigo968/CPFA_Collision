@@ -1,9 +1,6 @@
 file(REMOVE_RECURSE
-  "CPFA_loop_functions_autogen"
-  "CMakeFiles/CPFA_loop_functions_autogen.dir/AutogenOldSettings.cmake"
-  "CPFA_controller_autogen"
-  "CMakeFiles/CPFA_controller_autogen.dir/AutogenOldSettings.cmake"
   "CMakeFiles/CPFA_loop_functions_autogen"
+  "CPFA_loop_functions_autogen/mocs_compilation.cpp"
 )
 
 # Per-language clean rules from dependency scanning.
