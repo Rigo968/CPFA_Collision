@@ -38,6 +38,7 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		void PostStep();
 		bool IsExperimentFinished();
 		void PostExperiment();
+		void  python_run();
 		argos::CColor GetFloorColor(const argos::CVector2 &c_pos_on_floor);
 		// GA Functions
 		
@@ -209,6 +210,7 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		std::map<std::string, std::vector<std::vector<argos::CVector2>>> dropped_trajectories;
 		std::map<std::string, std::vector<std::vector<std::pair<size_t, argos::CVector2>>>> d_t;
 		std::map<string, vector<pair<size_t, argos::CVector2>>>t_trajectories;
+		std::map<string, vector<pair<size_t, argos::CVector2>>>Congested;
 		std::map<std::string, vector<argos::CVector2>> temp_trajectories;
 		std::map<std::string, vector<argos::CVector2>> temp2_trajectories;
 		std::vector<argos::CVector2> dropped_trajectories2;

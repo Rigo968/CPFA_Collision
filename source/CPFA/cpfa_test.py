@@ -5,4 +5,3 @@ import sys
 def test_func():
     print(np.__version__)
     return 0    
-

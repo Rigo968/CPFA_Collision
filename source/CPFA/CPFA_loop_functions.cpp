@@ -155,6 +155,7 @@ void CPFA_loop_functions::Reset() {
     TargetRayList.clear();
     Trajectory.clear();
     t_trajectories.clear();
+	Congested.clear();
     d_t.clear();
     SetFoodDistribution();
     
@@ -259,6 +260,32 @@ void CPFA_loop_functions::PostStep() {
 	  position = c2.GetPosition();
 	  robotPosList[c2.GetId()] = position;
 	  robotPosList2[c2.GetId()].push_back(make_pair(timestep, position));
+
+	  
+	  string type="";
+        if (FoodDistribution == 0) type = "random";
+        else if (FoodDistribution == 1) type = "cluster";
+        else type = "powerlaw";
+            
+        ostringstream num_tag;
+        num_tag << FoodItemCount; 
+              
+        ostringstream num_robots;
+        num_robots <<  Num_robots;
+   
+        ostringstream arena_width;
+        arena_width << ArenaWidth;
+        
+        ostringstream quardArena;
+        if(abs(NestPosition.GetX())>=1){ //the central nest is not in the center, this is a quard arena
+             quardArena << 1;
+         }
+         else{
+             quardArena << 0;
+        }
+        
+        string header = "./results/"+ type+"_CPFA_r"+num_robots.str()+"_tag"+num_tag.str()+"_"+arena_width.str()+"by"+arena_width.str()+"_quard_arena_" + quardArena.str() +"_";
+         std::ofstream droptrajOutput((header + "iAntDroppedTrajData1.txt").c_str(), std::ios::app);
 	  //robotPosList2.push_back(position);
 	  //robotPosList3[c2.GetId()].push_back(position);
 		// if(c2.GetStatus() == "DROPPED"){
@@ -274,12 +301,19 @@ void CPFA_loop_functions::PostStep() {
 			argos::LOG << "Robot " << c2.GetId() << " has found a resource" << std::endl;
 			temp_trajectories[c2.GetId()].push_back(c2.GetPosition());
 			t_trajectories[c2.GetId()].push_back(make_pair(timestep, c2.GetPosition()));
+			string title = "Robot: " + c2.GetId() + ", Trajectory: " + to_string(d_t[c2.GetId()].size() + 1) + ", ";
+			droptrajOutput << title <<"Positions: " << c2.GetPosition() << "; ";
+			python_run();
+
 		}
 		else if(c2.GetStatus() == "DROPPED" && !c2.IsGivingUpSearch()){
 			dropped_resource = true;
 			std::vector<argos::CVector2> traj;
 			std::vector<pair<size_t, argos::CVector2>> traj1;
-			argos::LOG << "Robot " << c2.GetId() << " has dropped a resource" << std::endl;			
+			argos::LOG << "Robot " << c2.GetId() << " has dropped a resource" << std::endl;		
+			string title = "Robot: " + c2.GetId() + ", Trajectory: " + to_string(d_t[c2.GetId()].size() + 1) + ", ";
+			droptrajOutput << title <<"Positions: " << c2.GetPosition() << "; ";	
+			python_run();
 			// for (const auto& pos : temp_trajectories[c2.GetId()]) {
 			// 	argos::LOG << "(" << pos.GetX() << ", " << pos.GetY() << "), ";
 			// }
@@ -298,9 +332,12 @@ void CPFA_loop_functions::PostStep() {
 			if(temp_trajectories.count(c2.GetId()) > 0) {
 				temp_trajectories[c2.GetId()].push_back(c2.GetPosition());
 				t_trajectories[c2.GetId()].push_back(make_pair(timestep, c2.GetPosition()));
-				
+				string title = "Robot: " + c2.GetId() + ", Trajectory: " + to_string(d_t[c2.GetId()].size() + 1) + ", ";
+				droptrajOutput << title <<"Positions: " << c2.GetPosition() << "; ";
+				python_run();
 			}
 		}
+		droptrajOutput.close();    
 	}
 	if (dropped_resource) {
 		collision_history.push_back(collision_count);
@@ -314,7 +351,35 @@ void CPFA_loop_functions::PostStep() {
 	// 	argos::LOG << std::endl;
 	// }	
 }
+void CPFA_loop_functions::python_run(){
+	string command = "python3 ./source/CPFA/RealTimeCongestion.py";  // or just "python" depending on your system
+    int result = system(command.c_str());  // Executes the command
+	Congested.clear();
+    ifstream file("./source/CPFA/parsed_trajectory_data.csv");
+	string line;
 
+    // Skip the header line
+    getline(file, line);
+
+    // Read the data
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string robot, trajectory;
+        float x, y, timestep, congestion;
+
+        getline(ss, robot, ',');
+        getline(ss, trajectory, ',');
+        ss >> x;
+        ss.ignore(1, ','); // Ignore the comma
+        ss >> y;
+        ss.ignore(1, ','); // Ignore the comma
+        ss >> timestep;
+        ss.ignore(1, ','); // Ignore the comma
+        ss >> congestion;
+
+        Congested[robot].emplace_back(timestep, argos::CVector2(x, y)); // Convert to size_t (milliseconds)
+    }
+}
 bool CPFA_loop_functions::IsExperimentFinished() {
 	bool isFinished = false;
 
@@ -476,47 +541,8 @@ void CPFA_loop_functions::PostExperiment() {
 
 		// Close the file after writing
 		droppedtrajOutput.close();       
-      double Timestep = 0.03125;
-	  std::ofstream droptrajOutput((header + "iAntDroppedTrajData1.txt").c_str(), std::ios::app);
-
-		// Check if the file was successfully opened
-		if (!trajOutput) {
-			std::cerr << "Error opening file for writing dropped trajectories." << std::endl;
-			return;
-		}
-
-		// Write a header or label for the data (if required)
-		droptrajOutput << "Dropped Trajectories\n";
-
-		// Iterate through each robot's dropped trajectories
-
-		for (std::map<std::string, std::vector<std::vector<pair<size_t, argos::CVector2>>>>::iterator it= d_t.begin(); it != d_t.end(); ++it) {
-			const std::string& robotId = it->first;  // Robot ID
-			const std::vector<std::vector<pair<size_t, argos::CVector2>>>& trajs = it->second;  // Vector of trajectories
-
-			// Iterate through each trajectory for the current robot
-			for (size_t i = 0; i < trajs.size(); ++i) {
-				const std::vector<pair<size_t, argos::CVector2>>& traject = trajs[i];
-				// Write the robot ID and trajectory index (optional for clarity)
-				droptrajOutput << "Robot: " << robotId << ", Nest Counter: " << counter_nest_history[i] << ", Collision Counter: " << collision_history[i] <<", Trajectory " << i + 1 << ":\n";
-				// Iterate through the positions in the trajectory
-				for (int j = 0; j < traject.size(); ++j) {
-					double time_step_value = Timestep * j;
-
-					droptrajOutput <<"Time Step: " << time_step_value <<", " << traject[j].second << "; ";  // Write each position (CVector2)
-				}
-				droptrajOutput << "\n";  // Newline after each trajectory
-			}
-		}
-		droptrajOutput.close();     
-		// droppedtrajOutput << "\nRobots near the nest at each timestep:\n";
-
-		// for (size_t i = 0; i < counter_nest_history.size(); ++i) {
-		// 	droppedtrajOutput << "Timestep " << i << ": " << counter_nest_history[i] << "\n";
-		// }
-
+      
 		// Close the file after writing
-		droppedtrajOutput.close();    
 	}
 		//droptrajOutput.close();       
 

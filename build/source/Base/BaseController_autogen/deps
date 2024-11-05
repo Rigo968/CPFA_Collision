@@ -1,0 +1,5 @@
+BaseController_autogen/timestamp: \
+	/home/rigo/argos3/build_simulator/CPFA_Collision/source/Base/BaseController.cpp \
+	/home/rigo/argos3/build_simulator/CPFA_Collision/source/Base/BaseController.h \
+	/home/rigo/argos3/build_simulator/CPFA_Collision/source/Base/CMakeLists.txt \
+	/usr/bin/cmake

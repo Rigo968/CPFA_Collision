@@ -1,4 +1,4 @@
-# Install script for directory: /root/src/argos3/build_simulator/Collision_Free_CPFA
+# Install script for directory: /home/rigo/argos3/build_simulator/CPFA_Collision
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,7 +44,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/root/src/argos3/build_simulator/Collision_Free_CPFA/build/source/cmake_install.cmake")
+  include("/home/rigo/argos3/build_simulator/CPFA_Collision/build/source/cmake_install.cmake")
 
 endif()
 
@@ -56,5 +56,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/root/src/argos3/build_simulator/Collision_Free_CPFA/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/rigo/argos3/build_simulator/CPFA_Collision/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

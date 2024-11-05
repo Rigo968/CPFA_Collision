@@ -1,4 +1,4 @@
-# Install script for directory: /root/src/argos3/build_simulator/Collision_Free_CPFA/source/Base
+# Install script for directory: /home/rigo/argos3/build_simulator/CPFA_Collision/source/Base
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
