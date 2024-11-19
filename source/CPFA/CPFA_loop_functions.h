@@ -39,6 +39,7 @@ class CPFA_loop_functions : public argos::CLoopFunctions
 		bool IsExperimentFinished();
 		void PostExperiment();
 		void  python_run();
+		void process_congestion_data();
 		argos::CColor GetFloorColor(const argos::CVector2 &c_pos_on_floor);
 		// GA Functions
 		

@@ -1,4 +1,5 @@
 #include "CPFA_loop_functions.h"
+#include <thread>
 
 CPFA_loop_functions::CPFA_loop_functions() :
 	RNG(argos::CRandom::CreateRNG("argos")),
@@ -303,7 +304,7 @@ void CPFA_loop_functions::PostStep() {
 			t_trajectories[c2.GetId()].push_back(make_pair(timestep, c2.GetPosition()));
 			string title = "Robot: " + c2.GetId() + ", Trajectory: " + to_string(d_t[c2.GetId()].size() + 1) + ", ";
 			droptrajOutput << title <<"Positions: " << c2.GetPosition() << "; ";
-			python_run();
+			//python_run();
 
 		}
 		else if(c2.GetStatus() == "DROPPED" && !c2.IsGivingUpSearch()){
@@ -334,14 +335,16 @@ void CPFA_loop_functions::PostStep() {
 				t_trajectories[c2.GetId()].push_back(make_pair(timestep, c2.GetPosition()));
 				string title = "Robot: " + c2.GetId() + ", Trajectory: " + to_string(d_t[c2.GetId()].size() + 1) + ", ";
 				droptrajOutput << title <<"Positions: " << c2.GetPosition() << "; ";
-				python_run();
+				//python_run();
 			}
 		}
 		droptrajOutput.close();    
-	}
+	
 	if (dropped_resource) {
 		collision_history.push_back(collision_count);
 	}
+	}
+
 	
 	// for (auto const& pair : dropped_trajectories) {
 	// 	argos::LOG << "Robot " << pair.first << " trajectory: ";
@@ -351,35 +354,58 @@ void CPFA_loop_functions::PostStep() {
 	// 	argos::LOG << std::endl;
 	// }	
 }
-void CPFA_loop_functions::python_run(){
-	string command = "python3 ./source/CPFA/RealTimeCongestion.py";  // or just "python" depending on your system
-    int result = system(command.c_str());  // Executes the command
-	Congested.clear();
-    ifstream file("./source/CPFA/parsed_trajectory_data.csv");
-	string line;
+
+#include <fstream>
+#include <sstream>
+#include <unordered_map>
+#include <vector>
+#include <iostream>
+#include <limits>
+#include <argos3/core/utility/math/vector2.h>
+
+void CPFA_loop_functions::python_run() {
+    // Run the Python script to process the data
+    std::string command = "python3 ./source/CPFA/RealTimeCongestion.py";
+    int result = system(command.c_str()); // Executes the command
+
+    // Clear previous data
+    Congested.clear();
+
+    // Open the CSV file in binary mode to improve speed
+    std::ifstream file("./source/CPFA/parsed_trajectory_data.csv", std::ios::in | std::ios::binary);
+
+    // Check if the file opened successfully
+    if (!file) {
+        std::cerr << "Error: Cannot open the file." << std::endl;
+        return;
+    }
 
     // Skip the header line
-    getline(file, line);
+    std::string line;
+    std::getline(file, line);
 
-    // Read the data
-    while (getline(file, line)) {
-        stringstream ss(line);
-        string robot, trajectory;
-        float x, y, timestep, congestion;
+    // Read the file line by line
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
 
-        getline(ss, robot, ',');
-        getline(ss, trajectory, ',');
-        ss >> x;
-        ss.ignore(1, ','); // Ignore the comma
-        ss >> y;
-        ss.ignore(1, ','); // Ignore the comma
-        ss >> timestep;
-        ss.ignore(1, ','); // Ignore the comma
-        ss >> congestion;
+        // Variables to store parsed data
+        std::string robot;
+        float x, y, timestep;
 
-        Congested[robot].emplace_back(timestep, argos::CVector2(x, y)); // Convert to size_t (milliseconds)
+        // Parse each line, ignoring unnecessary columns
+        std::getline(ss, robot, ',');        // Read Robot
+        ss.ignore(std::numeric_limits<std::streamsize>::max(), ','); // Skip Trajectory
+        ss >> x; ss.ignore(1);               // Read X, ignore comma
+        ss >> y; ss.ignore(1);               // Read Y, ignore comma
+        ss >> timestep;                      // Read Timestep
+        ss.ignore(std::numeric_limits<std::streamsize>::max(), ','); // Skip Congestion
+
+        // Store parsed data into Congested map
+        Congested[robot].emplace_back(timestep, argos::CVector2(x, y));
     }
+    file.close(); // Explicitly close the file
 }
+
 bool CPFA_loop_functions::IsExperimentFinished() {
 	bool isFinished = false;
 

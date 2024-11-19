@@ -226,25 +226,7 @@ void CPFA_qt_user_functions::DrawTrails() {
 	const auto& t_trajectories = loopFunctions.t_trajectories; // Ensure you have a getter in your loop functions class
     const auto& d_t = loopFunctions.d_t;
 	const auto& Congested = loopFunctions.Congested;
-	glColor3f(0.0f, 1.0f, 0.0f);
-	for (const auto& robotTraj : Congested) {
-        const std::string& robotId = robotTraj.first;
-        const auto& traj = robotTraj.second;
 
-        // Iterate through the pairs (timestep, CVector2)
-        for (size_t j = 1; j < traj.size(); ++j) {
-            // Get the previous and current positions
-            const auto& prev = traj[j - 1]; // (timestep, CVector2)
-            const auto& curr = traj[j];     // (timestep, CVector2)
-			argos::CVector2 prevPos = prev.second; // Get the CVector2 from the pair
-			argos::CVector2 currPos = curr.second; // Get the CVector2 from the pair
-
-			DrawRay(CRay3(argos::CVector3(prevPos.GetX(), prevPos.GetY(), 0.01),
-						argos::CVector3(currPos.GetX(), currPos.GetY(), 0.01)));
-					}
-    }
-
-	glColor3f(1.0f, 0.0f, 0.0f);
     for (const auto& robotTraj : t_trajectories) {
         const std::string& robotId = robotTraj.first;
         const auto& traj = robotTraj.second;
@@ -262,7 +244,7 @@ void CPFA_qt_user_functions::DrawTrails() {
 					}
     }
 
-    // Draw trails from dropped_trajectories if needed
+    //Draw trails from dropped_trajectories if needed
     for (const auto& robotDroppedTraj : d_t) {
         const std::string& robotId = robotDroppedTraj.first;
         const auto& traj = robotDroppedTraj.second;
@@ -283,8 +265,24 @@ void CPFA_qt_user_functions::DrawTrails() {
 						}
     }
 }
+glColor3f(1.0f, 0.0f, 0.0f);
+for (const auto& robotTraj : Congested) {
+        const std::string& robotId = robotTraj.first;
+        const auto& traj = robotTraj.second;
+
+        // Iterate through the pairs (timestep, CVector2)
+        for (size_t j = 1; j < traj.size(); ++j) {
+            // Get the previous and current positions
+            const auto& prev = traj[j - 1]; // (timestep, CVector2)
+            const auto& curr = traj[j];     // (timestep, CVector2)
+			argos::CVector2 prevPos = prev.second; // Get the CVector2 from the pair
+			argos::CVector2 currPos = curr.second; // Get the CVector2 from the pair
+
+			DrawRay(CRay3(argos::CVector3(prevPos.GetX(), prevPos.GetY(), 0.03),
+						argos::CVector3(currPos.GetX(), currPos.GetY(), 0.03)), CColor::GREEN);
+					}
+    }
 }
 
-//NEXT STEP IS TO CLEAR THE RED LINES AFTER RESTARTING SIMULATION.
 
 REGISTER_QTOPENGL_USER_FUNCTIONS(CPFA_qt_user_functions, "CPFA_qt_user_functions")
