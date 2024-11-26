@@ -3,11 +3,15 @@ import math
 import pandas as pd
 import re
 import numpy as np
+import pickle
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
 
 
 def parse_trajectory_file(file_path, interval):
     # Define a regex pattern to capture robot, trajectory, and (x, y) positions
-    pattern = r"Robot:\s*(\w+),\s*Trajectory:\s*(\d+),\s*Positions:\s*([\d.-]+),([\d.-]+)"
+    pattern = r"Robot:\s*(\w+),\s*Trajectory:\s*(\d+),\s*Positions:\s*([\d.-]+),([\d.-]+), \s*Game:\s*(\d+)"
     
     # List to hold data for the DataFrame
     data = []
@@ -24,11 +28,13 @@ def parse_trajectory_file(file_path, interval):
                 matches = re.findall(pattern, line)
 
                 # Process each match
-                for robot, traj, x, y in matches:
+                for robot, traj, x, y, game in matches:
                     robot_id = robot.strip()
                     trajectory_id = int(traj.strip())
                     x = float(x)
                     y = float(y)
+                    game_count = int(game)
+
 
                     # Check if we have a new robot/trajectory combination
                     if (robot_id != current_robot) or (trajectory_id != current_trajectory):
@@ -41,7 +47,8 @@ def parse_trajectory_file(file_path, interval):
                         'Robot': robot_id,
                         'Trajectory': trajectory_id,
                         'X': x,
-                        'Y': y
+                        'Y': y,
+                        'Game': game_count
                     })
 
     except FileNotFoundError:
@@ -113,20 +120,23 @@ def Distance_Storage_For_Bot(Robot, interval, slide_intervals = 32):
     short_dist = []
     total_dist = []  # To store distances for each window
 
-    for traj in f_step['Trajectory'].unique():
-        f_step_traj = f_step[f_step['Trajectory'] == traj]  # Filter data for the current trajectory
-        
-        # Loop through the filtered trajectory data using a sliding window
-        for i in range(0, len(f_step_traj) - interval + 1, slide_intervals):
-                # Get the points in the current window
-            window = f_step_traj.iloc[i:i + interval]
+    for game in f_step['Game'].unique():
+        f_step_game = f_step[f_step['Game'] == game]
 
-            x_values = window['X'].to_numpy()
-            y_values = window['Y'].to_numpy()
-            distance = calculate_distance(x_values, y_values)
-            total_dist.append(distance)
-            short_distance = calculate_distance_two_points(x_values[0], x_values[-1], y_values[0], y_values[-1])
-            short_dist.append(short_distance)
+        for traj in f_step_game['Trajectory'].unique():
+            f_step_traj = f_step_game[f_step_game['Trajectory'] == traj]  # Filter data for the current trajectory
+            
+            # Loop through the filtered trajectory data using a sliding window
+            for i in range(0, len(f_step_traj) - interval + 1, slide_intervals):
+                    # Get the points in the current window
+                window = f_step_traj.iloc[i:i + interval]
+
+                x_values = window['X'].to_numpy()
+                y_values = window['Y'].to_numpy()
+                distance = calculate_distance(x_values, y_values)
+                total_dist.append(distance)
+                short_distance = calculate_distance_two_points(x_values[0], x_values[-1], y_values[0], y_values[-1])
+                short_dist.append(short_distance)
 
     return short_dist, total_dist
 
@@ -164,24 +174,26 @@ def get_congestion_coordinates(df, congestion, interval, Robot):
 def plot_robot_trajectory_with_collisions(df):
     colors = plt.cm.get_cmap('tab10', len(df['Robot'].unique()))
     plt.figure(figsize=(10, 10))
-    collision_points = df[df['Congestion'] == 1]
-
-    for i, robot in enumerate(df['Robot'].unique()):
-      robot_data = df[df['Robot'] == robot]
-      for trajectory in robot_data['Trajectory'].unique():
-        trajectory_data = robot_data[robot_data['Trajectory'] == trajectory]
-        plt.plot(trajectory_data['X'], trajectory_data['Y'],
-                 label=f'Robot {robot}, Trajectory {trajectory}',
-                 color=colors(i),
-                 alpha=1,
-                 linewidth = 3)
-    # Plot the overall trajectory
-    plt.scatter(collision_points['X'], collision_points['Y'], color='yellow', label='Collision Points', alpha = 0.3, s = 10, zorder = 2)
+    for game in df['Game'].unique():
+        game_data = df[df['Game'] == game]
+        for i, robot in enumerate(game_data['Robot'].unique()):
+            robot_data = game_data[game_data['Robot'] == robot]
+            for trajectory in robot_data['Trajectory'].unique():
+                trajectory_data = robot_data[robot_data['Trajectory'] == trajectory]
+                collision_points = trajectory_data[trajectory_data['Congestion'] == 1]
+                plt.plot(trajectory_data['X'], trajectory_data['Y'],
+                         label=f'Robot {robot}, Trajectory {trajectory}',
+                         color=colors(i),
+                         alpha=1,
+                         linewidth=3)
+                
+                # Plot the collision points (highlighted in red)
+                plt.plot(collision_points['X'], collision_points['Y'],
+                         color='red', alpha=1, linewidth=3, zorder=100)
 
     plt.title('Robot Trajectory with Collision Highlighting')
     plt.xlabel('X')
     plt.ylabel('Y')
-    plt.legend()
     plt.axhline(0, color='gray', linewidth=0.5, linestyle='--')
     plt.axvline(0, color='gray', linewidth=0.5, linestyle='--')
     plt.grid()
@@ -194,7 +206,7 @@ def UpdateDf(df, intervals):
         df_new = get_congestion_coordinates(df, congestion_detection(i, intervals), intervals, i)
         #print(df_new)
 
-        df_updated = pd.merge(df_updated, df_new[['Robot', 'Trajectory', 'Timestep', 'X', 'Y', 'Congestion']], on=['Robot', 'Trajectory', 'Timestep', 'X', 'Y'], how='left')
+        df_updated = pd.merge(df_updated, df_new[['Robot', 'Trajectory', 'Timestep', 'X', 'Y', 'Congestion', 'Game']], on=['Robot', 'Trajectory', 'Timestep', 'X', 'Y', 'Game'], how='left')
         #print(df_updated[df_updated['Robot'] == 'F01'])
 
         df_updated['Congestion'] = df_updated['Congestion_x'].combine_first(df_updated['Congestion_y'])
@@ -223,29 +235,77 @@ def plot_all_trajectories(df):
     plt.grid(True)
     plt.show()
 
-file_path = './results/cluster_CPFA_r16_tag128_8by8_quard_arena_0_iAntDroppedTrajData1.txt'
+file_path = './results/cluster_CPFA_r16_tag128_8by8_quard_arena_0_iAntDroppedTrajData_OLD.txt'
 
-second = 2 * 32 
+second = 3 * 32 
 df = parse_trajectory_file(file_path, 0.03125)
-df = df[df['Timestep'] >= 1.000]
+df = df[df['Timestep'] >= 2.000]
 
 
-plot_all_trajectories(df)
+#plot_all_trajectories(df)
+#print(df)
+df = UpdateDf(df, second)
+#plot_robot_trajectory_with_collisions(df)
 
-Congestion_df = UpdateDf(df, second)
 #print(Congestion_df)
-Congestion_df = Congestion_df[Congestion_df['Congestion'] == 1]
-
-plot_robot_trajectory_with_collisions(Congestion_df)
-
 #use get_collision_coordinates function if you want a specific bot being plotted
-#Congestion_bot = get_congestion_coordinates(df, congestion_detection("F32", increment, th), increment, "F32")
+#Congestion_bot = get_congestion_coordinates(df, congestion_detection("F11", second), second, "F11")
 #plot_robot_trajectory_with_collisions(Congestion_bot)
 
 #print(Congestion_df.head())
 #print(Congestion_df.tail())
+df['Velocity'] = df.groupby(['Robot', 'Trajectory', 'Game']).apply(
+    lambda group: ((group['X'].diff() ** 2 + group['Y'].diff() ** 2) ** 0.5) / 0.03125
+).reset_index(level=['Robot', 'Trajectory', 'Game'], drop=True)
+df['Velocity'].fillna(0, inplace=True)
+df['Congestion'] = df['Congestion'].astype(int)
+radius=0.9
+df['Congestion'] = df.apply(
+        lambda row: row['Congestion'] if np.sqrt(row['X'] ** 2 + row['Y'] ** 2) <= radius
+                  else 0, axis=1)
+#Congestion_df = df[df['Congestion'] == 1]
+#print(Congestion_df)
+print(df)
+
+features = ['Velocity', 'X', 'Y']  # or other relevant columns
+target = 'Congestion'
+
+X = df[features]
+y = df[target]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+model = RandomForestClassifier()
+model.fit(X_train, y_train)
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Evaluate the model's performance
+accuracy = accuracy_score(y_test, y_pred)
+print(f'Accuracy: {accuracy:.2f}')
+
+# Get a classification report
+print(classification_report(y_test, y_pred))
+new_df = df[['Robot', 'Trajectory', 'X', 'Y','Timestep', 'Velocity', 'Game']]
+X_new = df[['Velocity', 'X', 'Y']]
+y_pred_new = model.predict(X_new)
+new_df['Congestion'] = y_pred_new
+
+print(new_df)
+plot_robot_trajectory_with_collisions(df)
+
+
+with open('./source/CPFA/congestion_model.pkl', 'wb') as file:
+    pickle.dump(model, file)
 
 
 output_file_path = "./source/CPFA/parsed_trajectory_data.csv"
 
-Congestion_df.to_csv(output_file_path, index=False, mode='w')
+#Congestion_df.to_csv(output_file_path, index=False, mode='w')
+
+
+
+
+
+
+
+#get density(Count of Robots nearby at that time step), speed, velocity whatever, apply it to CPFA

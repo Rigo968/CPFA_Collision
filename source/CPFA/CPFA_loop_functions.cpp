@@ -43,7 +43,8 @@ CPFA_loop_functions::CPFA_loop_functions() :
 	CameraRadiusSquared(2.25),
 	NumDistributedFood(0),
 	score(0),
-	PrintFinalScore(0)
+	PrintFinalScore(0),
+	Game_Count(0)
 {}
 
 void CPFA_loop_functions::Init(argos::TConfigurationNode &node) {	
@@ -144,6 +145,7 @@ void CPFA_loop_functions::Reset() {
 
     GetSpace().Reset();
     GetSpace().GetFloorEntity().Reset();
+	Game_Count++;
     MaxSimCounter = SimCounter;
     SimCounter = 0;
     score = 0;
@@ -303,7 +305,7 @@ void CPFA_loop_functions::PostStep() {
 			temp_trajectories[c2.GetId()].push_back(c2.GetPosition());
 			t_trajectories[c2.GetId()].push_back(make_pair(timestep, c2.GetPosition()));
 			string title = "Robot: " + c2.GetId() + ", Trajectory: " + to_string(d_t[c2.GetId()].size() + 1) + ", ";
-			droptrajOutput << title <<"Positions: " << c2.GetPosition() << "; ";
+			droptrajOutput << title <<"Positions: " << c2.GetPosition() << ", Game: " << Game_Count << "; ";
 			//python_run();
 
 		}
@@ -313,8 +315,8 @@ void CPFA_loop_functions::PostStep() {
 			std::vector<pair<size_t, argos::CVector2>> traj1;
 			argos::LOG << "Robot " << c2.GetId() << " has dropped a resource" << std::endl;		
 			string title = "Robot: " + c2.GetId() + ", Trajectory: " + to_string(d_t[c2.GetId()].size() + 1) + ", ";
-			droptrajOutput << title <<"Positions: " << c2.GetPosition() << "; ";	
-			python_run();
+			droptrajOutput << title <<"Positions: " << c2.GetPosition() << ", Game: " << Game_Count << "; ";
+			//python_run();
 			// for (const auto& pos : temp_trajectories[c2.GetId()]) {
 			// 	argos::LOG << "(" << pos.GetX() << ", " << pos.GetY() << "), ";
 			// }
@@ -334,7 +336,7 @@ void CPFA_loop_functions::PostStep() {
 				temp_trajectories[c2.GetId()].push_back(c2.GetPosition());
 				t_trajectories[c2.GetId()].push_back(make_pair(timestep, c2.GetPosition()));
 				string title = "Robot: " + c2.GetId() + ", Trajectory: " + to_string(d_t[c2.GetId()].size() + 1) + ", ";
-				droptrajOutput << title <<"Positions: " << c2.GetPosition() << "; ";
+				droptrajOutput << title <<"Positions: " << c2.GetPosition() << ", Game: " << Game_Count << "; ";
 				//python_run();
 			}
 		}

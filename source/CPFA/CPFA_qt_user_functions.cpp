@@ -240,7 +240,7 @@ void CPFA_qt_user_functions::DrawTrails() {
 			argos::CVector2 currPos = curr.second; // Get the CVector2 from the pair
 
 			DrawRay(CRay3(argos::CVector3(prevPos.GetX(), prevPos.GetY(), 0.01),
-						argos::CVector3(currPos.GetX(), currPos.GetY(), 0.01)));
+						argos::CVector3(currPos.GetX(), currPos.GetY(), 0.01)), CColor::GREEN);
 					}
     }
 
@@ -261,7 +261,7 @@ void CPFA_qt_user_functions::DrawTrails() {
 				argos::CVector2 currPos = curr.second; // Get the CVector2 from the pair
 
 				DrawRay(CRay3(argos::CVector3(prevPos.GetX(), prevPos.GetY(), 0.01),
-							argos::CVector3(currPos.GetX(), currPos.GetY(), 0.01)));
+							argos::CVector3(currPos.GetX(), currPos.GetY(), 0.01)), CColor::GREEN);
 						}
     }
 }
@@ -279,7 +279,7 @@ for (const auto& robotTraj : Congested) {
 			argos::CVector2 currPos = curr.second; // Get the CVector2 from the pair
 
 			DrawRay(CRay3(argos::CVector3(prevPos.GetX(), prevPos.GetY(), 0.03),
-						argos::CVector3(currPos.GetX(), currPos.GetY(), 0.03)), CColor::GREEN);
+						argos::CVector3(currPos.GetX(), currPos.GetY(), 0.03)), CColor::RED);
 					}
     }
 }
