@@ -1,6 +1,7 @@
 #include "CPFA_controller.h"
 #include <unistd.h>
 #include <fstream>
+#include <cstdlib>
 
 //#include <argos3/core/utility/logging/argos_log.h>
 
@@ -585,6 +586,15 @@ void CPFA_controller::Dropped(){
  * up on searching and is returning to the nest.
  *****/
 void CPFA_controller::Returning() {
+	system("python3 ./source/CPFA/Machine_L.py");
+	std::ifstream congestion_file("./source/CPFA/parsed_trajectory_data.csv");
+    std::string line;
+	while (std::getline(congestion_file, line)) {
+        if (line.find(GetId()) != std::string::npos) {
+			CPFA_state = DROPPED; 
+            break;  
+        }
+	}
  //LOG<<"Returning..."<<endl;
 	//SetHoldingFood();
 	m_pcWheels->SetLinearVelocity(0.08f, 0.08f); //setting velocity when returning to nest

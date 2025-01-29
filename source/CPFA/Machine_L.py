@@ -128,15 +128,29 @@ file_path = './results/cluster_CPFA_r16_tag128_8by8_quard_arena_0_iAntDroppedTra
 
 df = parse_trajectory_file(file_path, 0.03125)
 df = df[df['Timestep'] >= 2.000]
-df['Velocity'] = df.groupby(['Robot', 'Trajectory']).apply(
+
+# Compute the velocity for each group of 'Robot' and 'Trajectory'
+velocity = df.groupby(['Robot', 'Trajectory']).apply(
     lambda group: ((group['X'].diff() ** 2 + group['Y'].diff() ** 2) ** 0.5) / 0.03125
-).reset_index(level=['Robot', 'Trajectory'], drop=True)
+)
+
+# Convert the result from a multi-index series to a single-column series
+velocity = velocity.reset_index(level=['Robot', 'Trajectory'], drop=True)
+
+# Assign the 'Velocity' column in the DataFrame
+df['Velocity'] = velocity
+
+# Fill any NaN values in the 'Velocity' column with 0
 df['Velocity'].fillna(0, inplace=True)
-print(df)
 with open('./source/CPFA/congestion_model.pkl', 'rb') as file:
     model = pickle.load(file)
 
 X_new = df[['Velocity', 'X', 'Y']]
 predictions = model.predict(X_new)  # Replace X_new with your new data
 df['Congestion'] = predictions
-plot_robot_trajectory_with_collisions(df)
+
+Congestion_df = df[df['Congestion'] == 1]
+Congestion_df = Congestion_df.groupby(['Robot', 'Trajectory']).first().reset_index()
+output_file_path = "./source/CPFA/parsed_trajectory_data.csv"
+Congestion_df.to_csv(output_file_path, index=False, mode='w')
+

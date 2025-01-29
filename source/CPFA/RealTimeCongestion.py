@@ -235,7 +235,7 @@ def plot_all_trajectories(df):
     plt.grid(True)
     plt.show()
 
-file_path = './results/cluster_CPFA_r16_tag128_8by8_quard_arena_0_iAntDroppedTrajData_OLD.txt'
+file_path = './results/cluster_CPFA_r16_tag128_8by8_quard_arena_0_iAntDroppedTrajData1.txt'
 
 second = 3 * 32 
 df = parse_trajectory_file(file_path, 0.03125)
@@ -259,7 +259,7 @@ df['Velocity'] = df.groupby(['Robot', 'Trajectory', 'Game']).apply(
 ).reset_index(level=['Robot', 'Trajectory', 'Game'], drop=True)
 df['Velocity'].fillna(0, inplace=True)
 df['Congestion'] = df['Congestion'].astype(int)
-radius=0.9
+radius=1
 df['Congestion'] = df.apply(
         lambda row: row['Congestion'] if np.sqrt(row['X'] ** 2 + row['Y'] ** 2) <= radius
                   else 0, axis=1)
@@ -267,35 +267,35 @@ df['Congestion'] = df.apply(
 #print(Congestion_df)
 print(df)
 
-features = ['Velocity', 'X', 'Y']  # or other relevant columns
-target = 'Congestion'
+#features = ['Velocity', 'X', 'Y']  # or other relevant columns
+#target = 'Congestion'
 
-X = df[features]
-y = df[target]
+#X = df[features]
+#y = df[target]
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-model = RandomForestClassifier()
-model.fit(X_train, y_train)
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+#model = RandomForestClassifier()
+#model.fit(X_train, y_train)
 # Make predictions on the test set
-y_pred = model.predict(X_test)
+#_pred = model.predict(X_test)
 
 # Evaluate the model's performance
-accuracy = accuracy_score(y_test, y_pred)
-print(f'Accuracy: {accuracy:.2f}')
+#accuracy = accuracy_score(y_test, y_pred)
+#print(f'Accuracy: {accuracy:.2f}')
 
 # Get a classification report
-print(classification_report(y_test, y_pred))
-new_df = df[['Robot', 'Trajectory', 'X', 'Y','Timestep', 'Velocity', 'Game']]
-X_new = df[['Velocity', 'X', 'Y']]
-y_pred_new = model.predict(X_new)
-new_df['Congestion'] = y_pred_new
+#print(classification_report(y_test, y_pred))
+#new_df = df[['Robot', 'Trajectory', 'X', 'Y','Timestep', 'Velocity', 'Game']]
+#X_new = df[['Velocity', 'X', 'Y']]
+#y_pred_new = model.predict(X_new)
+#new_df['Congestion'] = y_pred_new
 
-print(new_df)
+#print(new_df)
 plot_robot_trajectory_with_collisions(df)
 
 
-with open('./source/CPFA/congestion_model.pkl', 'wb') as file:
-    pickle.dump(model, file)
+#with open('./source/CPFA/congestion_model.pkl', 'wb') as file:
+#    pickle.dump(model, file)
 
 
 output_file_path = "./source/CPFA/parsed_trajectory_data.csv"
@@ -308,4 +308,5 @@ output_file_path = "./source/CPFA/parsed_trajectory_data.csv"
 
 
 
-#get density(Count of Robots nearby at that time step), speed, velocity whatever, apply it to CPFA
+#get density(Count of Robots nearby at that time step),  apply it to CPFA
+#CPFA ADD if statement with a radius around the circle, if robot is within that area run machine modle, drop it

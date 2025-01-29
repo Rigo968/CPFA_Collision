@@ -365,49 +365,6 @@ void CPFA_loop_functions::PostStep() {
 #include <limits>
 #include <argos3/core/utility/math/vector2.h>
 
-void CPFA_loop_functions::python_run() {
-    // Run the Python script to process the data
-    std::string command = "python3 ./source/CPFA/RealTimeCongestion.py";
-    int result = system(command.c_str()); // Executes the command
-
-    // Clear previous data
-    Congested.clear();
-
-    // Open the CSV file in binary mode to improve speed
-    std::ifstream file("./source/CPFA/parsed_trajectory_data.csv", std::ios::in | std::ios::binary);
-
-    // Check if the file opened successfully
-    if (!file) {
-        std::cerr << "Error: Cannot open the file." << std::endl;
-        return;
-    }
-
-    // Skip the header line
-    std::string line;
-    std::getline(file, line);
-
-    // Read the file line by line
-    while (std::getline(file, line)) {
-        std::stringstream ss(line);
-
-        // Variables to store parsed data
-        std::string robot;
-        float x, y, timestep;
-
-        // Parse each line, ignoring unnecessary columns
-        std::getline(ss, robot, ',');        // Read Robot
-        ss.ignore(std::numeric_limits<std::streamsize>::max(), ','); // Skip Trajectory
-        ss >> x; ss.ignore(1);               // Read X, ignore comma
-        ss >> y; ss.ignore(1);               // Read Y, ignore comma
-        ss >> timestep;                      // Read Timestep
-        ss.ignore(std::numeric_limits<std::streamsize>::max(), ','); // Skip Congestion
-
-        // Store parsed data into Congested map
-        Congested[robot].emplace_back(timestep, argos::CVector2(x, y));
-    }
-    file.close(); // Explicitly close the file
-}
-
 bool CPFA_loop_functions::IsExperimentFinished() {
 	bool isFinished = false;
 
